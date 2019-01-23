@@ -39,8 +39,6 @@ pileometh_not: "10,10,10,10"
 pileometh_nob: "10,10,10,10"
 pileometh_nctot: "10,10,10,10"
 pileometh_nctob: "10,10,10,10"
-analysis_dir: "/ngs_share/pipeline_test/wgbs_small_test"
-temp_dir: "/ngs_share/pipeline_test/wgbs_small_test/files"
 clean_raw_fastqs: false
 clean_trimmed_fastqs: false
 clean_primary_sams: false

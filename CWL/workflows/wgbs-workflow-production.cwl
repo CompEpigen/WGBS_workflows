@@ -12,24 +12,20 @@ requirements:
     - var prepend = function(array,prefix) {  var file_array = []; for(var i=0; i<array.length;
       i++){ file_array[i] = prefix + '/' + array[i]; } return file_array; };
 inputs:
-  analysis_dir: string
+  # raw data:
   inp_read1:
-    items: string
     type: array
+    items: File
   inp_read2:
-    items: string
     type: array
-  fastq_batch_size: int
-  reference_fasta: string
-  max_reads: int
-  chromosomes:
-    items: string
-    type: array
-  chr_prefix: string
+    items: File
+
+  # output naming:
   conversion_chr_name: string
-  lib_type: string
-  trimmomatic_adapters_file: string
-  illuminaclip: string
+
+  # trimming
+  trimmomatic_jar_file: File
+  trimmomatic_adapters_file: File
   trimmomatic_phred: string
   trimmomatic_leading: int
   trimmomatic_trailing: int
@@ -38,6 +34,26 @@ inputs:
   trimmomatic_tailcrop: int
   trimmomatic_minlen: int
   trimmomatic_avgqual: int
+  illuminaclip: string
+
+  # alignment parameters
+  reference_fasta: 
+    type: File
+    secondaryFiles:
+      - .fai
+      - .bwameth.c2t
+      - .bwameth.c2t.amb
+      - .bwameth.c2t.ann
+      - .bwameth.c2t.bwt
+      - .bwameth.c2t.pac
+      - .bwameth.c2t.sa
+  chromosomes:
+    items: string
+    type: array
+  chr_prefix: string # remove?
+  lib_type: string
+
+  # methylation calling
   pileometh_min_phred: int
   pileometh_min_depth: int
   pileometh_min_mapq: int
@@ -49,69 +65,20 @@ inputs:
   pileometh_nob: string
   pileometh_nctot: string
   pileometh_nctob: string
-  temp_dir: string
-  trimmomatic_jar_file: string
-  clean_raw_fastqs: boolean
-  clean_trimmed_fastqs: boolean
-  clean_primary_sams: boolean
-  clean_primary_bams: boolean
-  clean_chr_bams: boolean
-  clean_merged_bams: boolean
-  clean_dup_rm_bams: boolean
+
 steps:
-  split_read1_files:
-    scatter: '#split_read1_files/file'
-    run: ../tools_string/split-compressed-files.yml
-    out:
-    - output
-    in:
-      file: inp_read1
-      file_dir: temp_dir
-      size: fastq_batch_size
-      suffix:
-        source: inp_read1
-        valueFrom: _$(inputs.file.substr(inputs.file.lastIndexOf('/')+1,inputs.file.lastIndexOf('.fastq')))_$(inputs.size/1000)k_R1.fastq
-      max_reads: max_reads
-  split_read2_files:
-    scatter: '#split_read2_files/file'
-    run: ../tools_string/split-compressed-files.yml
-    out:
-    - output
-    in:
-      file: inp_read2
-      file_dir: temp_dir
-      size: fastq_batch_size
-      suffix:
-        source: inp_read2
-        valueFrom: _$(inputs.file.substr(inputs.file.lastIndexOf('/')+1,inputs.file.lastIndexOf('.fastq')))_$(inputs.size/1000)k_R2.fastq
-      max_reads: max_reads
-  flatten1:
-    run: ../tools_string/flatten_fastq_arrays.yml
-    out:
-    - flattened_fastq_array
-    in:
-      fastq_arrays: split_read1_files/output
-  flatten2:
-    run: ../tools_string/flatten_fastq_arrays.yml
-    out:
-    - flattened_fastq_array
-    in:
-      fastq_arrays: split_read2_files/output
   adaptor_trimming:
-    run: ../tools_string/trimmomatic.yml
+    run: ../tools_string/trimmomatic.cwl
     scatterMethod: dotproduct
-    scatter: []
-    out:
-    - output_read1_trimmed_file
-    - output_read2_trimmed_paired_file
-    - output_log_file
+    scatter: [input_read1_fastq_file, input_read2_fastq_file] #!
+    scatterMethod: 'dotproduct'
     in:
-      file_dir: temp_dir
-      input_read1_fastq_file: flatten1/flattened_fastq_array
-      input_read2_fastq_file: flatten2/flattened_fastq_array
+      file_dir: temp_dir #!
+      input_read1_fastq_file: inp_read1
+      input_read2_fastq_file: inp_read2
       java_opts:
         default: -XX:-UseCompressedClassPointers -Xmx3000M -verbose
-      trimmomatic_jar_path: trimmomatic_jar_file
+      trimmomatic_jar_path: trimmomatic_jar_file #!
       end_mode:
         default: PE
       input_adapters_file: trimmomatic_adapters_file
@@ -126,118 +93,57 @@ steps:
       avgqual: trimmomatic_avgqual
       nthreads:
         default: 10
-      log_filename:
+      log_filename: #! intern naming
         source: flatten1/flattened_fastq_array
         valueFrom: $(inputs.input_read1_fastq_file.substr(0, inputs.input_read1_fastq_file.lastIndexOf('.')))_trimming.log
-  clean_raw_fastqs_1:
-    run: ../tools_string/cleanup.yml
     out:
-    - output
-    in:
-      files: flatten1/flattened_fastq_array
-      data_dir: temp_dir
-      do_clean: clean_raw_fastqs
-      previous_step: adaptor_trimming/output_log_file
-  clean_raw_fastqs_2:
-    run: ../tools_string/cleanup.yml
-    out:
-    - output
-    in:
-      files: flatten2/flattened_fastq_array
-      data_dir: temp_dir
-      do_clean: clean_raw_fastqs
-      previous_step: adaptor_trimming/output_log_file
+    - output_read1_trimmed_file
+    - output_read2_trimmed_paired_file
+    - output_log_file
+
   alignment:
     run: ../tools_string/bwameth.yml
     scatterMethod: dotproduct
-    scatter: []
-    out:
-    - ''
+    scatter: [] #!
     in:
       file_dir: temp_dir
       reference: reference_fasta
       read1: adaptor_trimming/output_read1_trimmed_file
       read2: adaptor_trimming/output_read2_trimmed_paired_file
-      filename:
+      filename: #! intern
         source: adaptor_trimming/output_read1_trimmed_file
         valueFrom: $(inputs.read1.substr(0, inputs.read1.lastIndexOf('.')))
-      cleanup_check1: clean_raw_fastqs_1/output
-      cleanup_check2: clean_raw_fastqs_2/output
       threads:
         default: 4
       lib_type: lib_type
-  clean_trimmed_fastqs_1:
-    run: ../tools_string/cleanup.yml
     out:
-    - output
-    in:
-      files: adaptor_trimming/output_read1_trimmed_file
-      data_dir: temp_dir
-      do_clean: clean_trimmed_fastqs
-      previous_step: alignment/alignment
-  clean_trimmed_fastqs_2:
-    run: ../tools_string/cleanup.yml
-    out:
-    - output
-    in:
-      files: adaptor_trimming/output_read2_trimmed_paired_file
-      data_dir: temp_dir
-      do_clean: clean_trimmed_fastqs
-      previous_step: alignment/alignment
+    - alignment #!
+
   flag_stat_aligned:
     scatter: '#flag_stat_aligned/input_bam_file'
     run: ../tools_string/samtools-flagstat.yml
-    out:
-    - output
     in:
-      file_dir: temp_dir
+      file_dir: temp_dir #!
       input_bam_file: alignment/alignment
       cleanup_check1: clean_trimmed_fastqs_1/output
       cleanup_check2: clean_trimmed_fastqs_2/output
-  sam_to_bam:
-    scatter: '#sam_to_bam/input'
-    run: ../tools_string/samtools-view.yml
     out:
-    - output
+    - output #!
+
+  sam_to_bam:
+    scatter: ['input']
+    run: ../tools_string/samtools-view.yml
     in:
       input: alignment/alignment
       isbam:
         default: 'true'
       output_name:
-        source: alignment/alignment
+        source: alignment/alignment #! intern
         valueFrom: $(inputs.input.substr(0, inputs.input.lastIndexOf('.'))).bam
-  clean_sams:
-    run: ../tools_string/cleanup.yml
     out:
-    - output
-    in:
-      files: alignment/alignment
-      data_dir: temp_dir
-      do_clean: clean_primary_sams
-      previous_step1: sam_to_bam/output
-      previous_step2: flag_stat_aligned/output
-  split_by_chromosome:
-    scatter: '#split_by_chromosome/input_bam_file'
-    run: ../tools_string/bamtools-split.yml
-    out:
-    - output_bam_files
-    in:
-      file_dir: temp_dir
-      input_bam_file: sam_to_bam/output
-      split_options:
-        default: reference
-      ref_prefix: chr_prefix
-      cleanup_check: clean_sams/output
-  clean_bams:
-    run: ../tools_string/cleanup.yml
-    out:
-    - output
-    in:
-      files: sam_to_bam/output
-      data_dir: temp_dir
-      do_clean: clean_primary_bams
-      previous_step: split_by_chromosome/output_bam_files
-  fix_all_bams:
+    - output #!
+
+  fix_all_bams: #! needed at all or just because spliting of bams by chromosome
     scatter: '#fix_all_bams/array_of_bams'
     run: ../tools_string/fix-all-bam-files.yml
     out:
@@ -246,25 +152,17 @@ steps:
       file_dir: temp_dir
       array_of_bams: split_by_chromosome/output_bam_files
       cleanup_check: clean_bams/output
-  clean_split_bams:
-    scatter: '#clean_split_bams/files'
-    run: ../tools_string/cleanup.yml
-    out:
-    - output
-    in:
-      files: split_by_chromosome/output_bam_files
-      data_dir: temp_dir
-      do_clean: clean_chr_bams
-      previous_step: fix_all_bams/array_of_fixed_bams
+      
   rearrange_bams:
     run: ../tools_string/rearrange_bams.yml
-    out:
-    - bam_arrays_per_chr
-    - chrom_names
     in:
       bam_arrays: fix_all_bams/array_of_fixed_bams
       chromosomes: chromosomes
       cleanup_check: clean_split_bams/output
+    out:
+    - bam_arrays_per_chr
+    - chrom_names
+
   bam_merging:
     run: ../tools_string/picard-MergeSamFiles.yml
     scatterMethod: dotproduct
