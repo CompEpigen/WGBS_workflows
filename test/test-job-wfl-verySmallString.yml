@@ -1,0 +1,42 @@
+inp_read1: ["/ngs_share/scratch/pavlo/benchmark/encode_chr22_test/data/chr22_10k_1.fastq.gz"]
+inp_read2: ["/ngs_share/scratch/pavlo/benchmark/encode_chr22_test/data/chr22_10k_2.fastq.gz"]
+#reference_fasta:
+#  class: File
+#  path: /ngs_share/data/genomes/Hsapiens/GRCh37/bwameth/GRCh37.lambda.fa
+reference_fasta: /ngs_share/data/genomes/Hsapiens/GRCh37/bwameth/GRCh37.lambda.fa
+chromosomes: [ 'chr1', 'chr2', 'chr22', 'MT', 'Lambda' ]
+chr_prefix: "chr"
+lib_type: "non-directional"
+fastq_batch_size: 5000
+max_reads: -1
+trimmomatic_jar_file: '/ngs_share/tools/trimmomatic-0.36/dist/jar/trimmomatic-0.36.jar'
+trimmomatic_adapters_file: "/opt/miniconda/pkgs/trimmomatic-0.36-3/share/trimmomatic/adapters/TruSeq2-PE.fa"
+trimmomatic_phred: "33"
+illuminaclip: "2:30:10:8:true"
+trimmomatic_leading: 0 
+trimmomatic_trailing: 0
+trimmomatic_crop: 1000
+trimmomatic_headcrop: 5
+trimmomatic_tailcrop: 5
+trimmomatic_minlen: 0
+trimmomatic_avgqual: 1
+pileometh_min_phred: 0
+pileometh_min_depth: 1
+pileometh_min_mapq: 0
+pileometh_ot: "0,0,0,0"
+pileometh_ob: "0,0,0,0"
+pileometh_ctot: "0,0,0,0"
+pileometh_ctob: "0,0,0,0"
+pileometh_not: "10,10,10,10"
+pileometh_nob: "10,10,10,10"
+pileometh_nctot: "10,10,10,10"
+pileometh_nctob: "10,10,10,10"
+analysis_dir: "/ngs_share/pipeline_test/chr22_very_small"
+temp_dir: "/ngs_share/pipeline_test/chr22_very_small/files"
+clean_raw_fastqs: true
+clean_trimmed_fastqs: true
+clean_primary_sams: true
+clean_primary_bams: true
+clean_chr_bams: true
+clean_merged_bams: true
+clean_dup_rm_bams: true

@@ -1,0 +1,271 @@
+{
+  "class": "CommandLineTool",
+  "sbg:cmdPreview": "/opt/bamtools/bin/bamtools split -in input/test.input_bam.ext -stub test.input_bam.splitted  -reference -refPrefix refp",
+  "id": "https://gcp-api.sbgenomics.com/v2/apps/admin/sbg-public-data/bamtools-split-2-4-0/10/raw/",
+  "sbg:sbgMaintained": false,
+  "sbg:latestRevision": 10,
+  "sbg:categories": [
+    "SAM/BAM-Processing"
+  ],
+  "sbg:toolkit": "BamTools",
+  "baseCommand": [
+    "/opt/bamtools/bin/bamtools",
+    "split"
+  ],
+  "sbg:modifiedOn": 1472050550,
+  "requirements": [
+    {
+      "class": "ExpressionEngineRequirement",
+      "requirements": [
+        {
+          "class": "DockerRequirement",
+          "dockerPull": "rabix/js-engine"
+        }
+      ],
+      "id": "#cwl-js-engine"
+    }
+  ],
+  "sbg:links": [
+    {
+      "label": "Homepage",
+      "id": "https://github.com/pezmaster31/bamtools"
+    },
+    {
+      "label": "Wiki",
+      "id": "https://github.com/pezmaster31/bamtools/wiki"
+    }
+  ],
+  "hints": [
+    {
+      "class": "DockerRequirement",
+      "dockerImageId": "f808163d4cd3",
+      "dockerPull": "images.sbgenomics.com/markop/bamtools:2.4.0"
+    },
+    {
+      "class": "sbg:CPURequirement",
+      "value": 1
+    },
+    {
+      "class": "sbg:MemRequirement",
+      "value": 1000
+    }
+  ],
+  "sbg:contributors": [
+    "admin",
+    "sevenbridges-gce"
+  ],
+  "stdin": "",
+  "successCodes": [],
+  "sbg:revisionsInfo": [
+    {
+      "sbg:revision": 0,
+      "sbg:revisionNotes": null,
+      "sbg:modifiedOn": 1452859175,
+      "sbg:modifiedBy": "sevenbridges-gce"
+    },
+    {
+      "sbg:revision": 1,
+      "sbg:revisionNotes": null,
+      "sbg:modifiedOn": 1452859176,
+      "sbg:modifiedBy": "sevenbridges-gce"
+    },
+    {
+      "sbg:revision": 2,
+      "sbg:revisionNotes": null,
+      "sbg:modifiedOn": 1472050550,
+      "sbg:modifiedBy": "admin"
+    },
+    {
+      "sbg:revision": 3,
+      "sbg:revisionNotes": null,
+      "sbg:modifiedOn": 1472050550,
+      "sbg:modifiedBy": "admin"
+    },
+    {
+      "sbg:revision": 4,
+      "sbg:revisionNotes": null,
+      "sbg:modifiedOn": 1472050550,
+      "sbg:modifiedBy": "admin"
+    },
+    {
+      "sbg:revision": 5,
+      "sbg:revisionNotes": null,
+      "sbg:modifiedOn": 1472050550,
+      "sbg:modifiedBy": "admin"
+    },
+    {
+      "sbg:revision": 6,
+      "sbg:revisionNotes": null,
+      "sbg:modifiedOn": 1472050550,
+      "sbg:modifiedBy": "admin"
+    },
+    {
+      "sbg:revision": 7,
+      "sbg:revisionNotes": null,
+      "sbg:modifiedOn": 1472050550,
+      "sbg:modifiedBy": "admin"
+    },
+    {
+      "sbg:revision": 8,
+      "sbg:revisionNotes": null,
+      "sbg:modifiedOn": 1472050550,
+      "sbg:modifiedBy": "admin"
+    },
+    {
+      "sbg:revision": 9,
+      "sbg:revisionNotes": null,
+      "sbg:modifiedOn": 1472050550,
+      "sbg:modifiedBy": "admin"
+    },
+    {
+      "sbg:revision": 10,
+      "sbg:revisionNotes": null,
+      "sbg:modifiedOn": 1472050550,
+      "sbg:modifiedBy": "admin"
+    }
+  ],
+  "sbg:license": "The MIT License",
+  "sbg:id": "admin/sbg-public-data/bamtools-split-2-4-0/10",
+  "description": "BamTools Split splits a BAM file based on a user-specified property. It creates a new BAM output file for each value found.\n\n**Warning:** Splitting  by tags or reference can output a large number of files.\n\n**Common issues:** Splitting by tag can produce no output if the selected tag doesn't exist in the BAM file.",
+  "sbg:toolAuthor": "Derek Barnett, Erik Garrison, Gabor Marth, and Michael Stromberg",
+  "sbg:project": "admin/sbg-public-data",
+  "sbg:toolkitVersion": "2.4.0",
+  "sbg:revision": 10,
+  "sbg:image_url": null,
+  "stdout": "",
+  "sbg:homepage": "https://github.com/pezmaster31/bamtools/wiki",
+  "sbg:job": {
+    "inputs": {
+      "input_bam_file": {
+        "class": "File",
+        "secondaryFiles": [],
+        "size": 0,
+        "path": "input/test.input_bam.ext"
+      },
+      "ref_prefix": "refp",
+      "tag_prefix": "tagp",
+      "split_options": "reference",
+      "tag": "tag"
+    },
+    "allocatedResources": {
+      "cpu": 1,
+      "mem": 1000
+    }
+  },
+  "outputs": [
+    {
+      "type": [
+        {
+          "name": "output_bam_files",
+          "type": "array",
+          "items": "File"
+        }
+      ],
+      "id": "#output_bam_files",
+      "sbg:fileTypes": "BAM",
+      "label": "Output BAM files",
+      "outputBinding": {
+        "sbg:inheritMetadataFrom": "#input_bam",
+        "glob": {
+          "class": "Expression",
+          "engine": "#cwl-js-engine",
+          "script": "{\n return '*.bam'\n  \n filepath = $job.inputs.input_bam_file.path\n\n file_path_sep = filepath.split(\"/\")\n filename = file_path_sep[file_path_sep.length-1]\n\n file_dot_sep = filename.split(\".\");\n base_name = file_dot_sep.slice(0,-1);\n\n\n return base_name + \".splitted\" + \".*.bam\";\n}"
+        }
+      },
+      "description": "Output BAM files."
+    }
+  ],
+  "sbg:validationErrors": [],
+  "sbg:createdBy": "sevenbridges-gce",
+  "inputs": [
+    {
+      "inputBinding": {
+        "prefix": "-in",
+        "separate": true,
+        "sbg:cmdInclude": true,
+        "position": 0
+      },
+      "type": [
+        "File"
+      ],
+      "id": "#input_bam_file",
+      "sbg:category": "Input & Output",
+      "sbg:fileTypes": "BAM",
+      "label": "Input BAM file",
+      "description": "The input BAM file."
+    },
+    {
+      "label": "Reference prefix",
+      "type": [
+        "null",
+        "string"
+      ],
+      "sbg:category": "Input & Output",
+      "description": "Custom prefix for splitting by references. Currently files end with REF_<refName>.bam. This option allows you to replace \"REF_\" with a prefix of your choosing.",
+      "id": "#ref_prefix"
+    },
+    {
+      "label": "Tag prefix",
+      "type": [
+        "null",
+        "string"
+      ],
+      "sbg:category": "Input & Output",
+      "description": "Custom prefix for splitting by tags. Current files end with TAG_<tagname>_<tagvalue>.bam. This option allows you to replace \"TAG_\" with a prefix of your choosing.",
+      "id": "#tag_prefix"
+    },
+    {
+      "label": "Tag split",
+      "type": [
+        "null",
+        "string"
+      ],
+      "sbg:category": "Split Options",
+      "description": "Splits alignments based on all values of TAG encountered (i.e. -tag RG creates a BAM file for each read group in original BAM file).",
+      "id": "#tag"
+    },
+    {
+      "label": "Split Options",
+      "type": [
+        {
+          "name": "split_options",
+          "symbols": [
+            "mapped",
+            "paired",
+            "reference",
+            "tag"
+          ],
+          "type": "enum"
+        }
+      ],
+      "sbg:category": "Execution",
+      "description": "Property upon which the BAM splitting is performed. Warning: Splitting  by tags or reference can output a large number of files.",
+      "id": "#split_options"
+    }
+  ],
+  "label": "BamTools Split",
+  "sbg:createdOn": 1452859175,
+  "arguments": [
+    {
+      "prefix": "-stub",
+      "separate": true,
+      "valueFrom": {
+        "class": "Expression",
+        "engine": "#cwl-js-engine",
+        "script": "{\n filepath = $job.inputs.input_bam_file.path\n\n file_path_sep = filepath.split(\"/\")\n filename = file_path_sep[file_path_sep.length-1]\n\n file_dot_sep = filename.split(\".\");\n base_name = file_dot_sep.slice(0,-1).join(\".\");\n\n\n return base_name + \".splitted\"\n}"
+      },
+      "position": 3
+    },
+    {
+      "separate": true,
+      "valueFrom": {
+        "class": "Expression",
+        "engine": "#cwl-js-engine",
+        "script": "{\n  line = ''\n  \n  if ($job.inputs.split_options == 'mapped'){\n    line = line.concat('-mapped')\n  } else if ($job.inputs.split_options == 'paired'){\n    line = line.concat('-paired')\n  } else if ($job.inputs.split_options == 'reference'){\n    line = line.concat('-reference ')\n    if ($job.inputs.ref_prefix){\n          line = line.concat('-refPrefix ')\n          line = line.concat($job.inputs.ref_prefix)\n    }\n  } else if ($job.inputs.split_options == 'tag'){\n      line = line.concat('-tag ')\n      line = line.concat($job.inputs.tag)\n      if ($job.inputs.tag_prefix){\n          line = line.concat(' -tagPrefix ')\n          line = line.concat($job.inputs.tag_prefix)\n    }\n  }\n  return line\n}"
+      },
+      "position": 4
+    }
+  ],
+  "sbg:modifiedBy": "admin",
+  "temporaryFailCodes": []
+}

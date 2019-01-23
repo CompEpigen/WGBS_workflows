@@ -1,0 +1,50 @@
+inp_read1: [
+  "/home/lutsik/c010-datasets/Internal/BS_benchmark/wgbs/161006_ST-E00335_0086_BHWFCLCCXX/AS-136075-LR-18956/fastq/AS-136075-LR-18956_R1.fastq.gz",
+  "/home/lutsik/c010-datasets/Internal/BS_benchmark/wgbs/161006_ST-E00335_0086_BHWFCLCCXX/AS-136075-LR-18957/fastq/AS-136075-LR-18957_R1.fastq.gz"
+  
+]
+inp_read2: [
+  "/home/lutsik/c010-datasets/Internal/BS_benchmark/wgbs/161006_ST-E00335_0086_BHWFCLCCXX/AS-136075-LR-18956/fastq/AS-136075-LR-18956_R2.fastq.gz",
+  "/home/lutsik/c010-datasets/Internal/BS_benchmark/wgbs/161006_ST-E00335_0086_BHWFCLCCXX/AS-136075-LR-18957/fastq/AS-136075-LR-18957_R2.fastq.gz"
+  
+ ]
+#reference_fasta:
+#  class: File
+#  path: /ngs_share/data/genomes/Hsapiens/GRCh37/bwameth/GRCh37.lambda.fa
+reference_fasta: /ngs_share/data/genomes/Hsapiens/GRCh37/bwameth/GRCh37.lambda.fa
+chromosomes: [ 'chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22', 'chrX', 'chrY', 'MT','Lambda' ]
+chr_prefix: "chr"
+lib_type: "directional"
+fastq_batch_size: 40000000
+max_reads: 100000
+trimmomatic_jar_file: '/ngs_share/tools/trimmomatic-0.36/dist/jar/trimmomatic-0.36.jar'
+trimmomatic_adapters_file: '/opt/miniconda/pkgs/trimmomatic-0.36-3/share/trimmomatic/adapters/TruSeq2-PE.fa'
+trimmomatic_phred: "33"
+illuminaclip: "2:30:10:8:true"
+trimmomatic_leading: 0 
+trimmomatic_trailing: 0
+trimmomatic_crop: 1000
+trimmomatic_headcrop: 10
+trimmomatic_tailcrop: 10
+trimmomatic_minlen: 0
+trimmomatic_avgqual: 1
+pileometh_min_phred: 0
+pileometh_min_depth: 1
+pileometh_min_mapq: 0
+pileometh_ot: "0,0,0,0"
+pileometh_ob: "0,0,0,0"
+pileometh_ctot: "0,0,0,0"
+pileometh_ctob: "0,0,0,0"
+pileometh_not: "10,10,10,10"
+pileometh_nob: "10,10,10,10"
+pileometh_nctot: "10,10,10,10"
+pileometh_nctob: "10,10,10,10"
+analysis_dir: "/ngs_share/pipeline_test/wgbs_small_test"
+temp_dir: "/ngs_share/pipeline_test/wgbs_small_test/files"
+clean_raw_fastqs: false
+clean_trimmed_fastqs: false
+clean_primary_sams: false
+clean_primary_bams: false
+clean_chr_bams: false
+clean_merged_bams: false
+clean_dup_rm_bams: false
