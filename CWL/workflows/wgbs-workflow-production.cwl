@@ -26,7 +26,10 @@ inputs:
   # trimming
   trimmomatic_jar_file: File
   trimmomatic_adapters_file: File
-  trimmomatic_phred: string
+  trimmomatic_phred: 
+    doc: "33" or "64"
+    type: string
+    default: "64"
   trimmomatic_leading: int
   trimmomatic_trailing: int
   trimmomatic_crop: int

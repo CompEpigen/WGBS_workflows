@@ -200,6 +200,7 @@ inputs:
       prefix: TOPHRED64
       separate: false
 baseCommand: cd
+
 arguments:
 - position: -2
   valueFrom: $(inputs.file_dir)
@@ -229,6 +230,7 @@ arguments:
   valueFrom: 2>
 - position: 13
   valueFrom: $(inputs.file_dir + '/' + inputs.log_filename.replace('.log','_stdout.log'))
+  
 outputs:
   output_read1_trimmed_file:
     type: string
