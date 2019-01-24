@@ -294,7 +294,7 @@ steps:
       min_mapq: pileometh_min_mapq
   methylation_calling:
     scatter: '#methylation_calling/bam_file'
-    run: ../tools_string/methyldackel-extract.yml
+    run: "../tools_string/methyldackel-extract.yml"
     out:
     - methcall_bed
     in:

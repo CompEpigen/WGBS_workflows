@@ -25,7 +25,7 @@ inputs:
     type: string
     inputBinding:
       position: 3
-  nthreads:
+  threads:
     doc: Number of threads
     type: int
     default: 12

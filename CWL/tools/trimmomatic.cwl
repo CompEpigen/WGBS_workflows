@@ -5,7 +5,7 @@ requirements:
   ShellCommandRequirement: {}
 hints:
   ResourceRequirement:
-    coresMin: 1
+    coresMin: $( inputs.threads )
     ramMin: 28000
   DockerRequirement:
     dockerPull: dukegcb/trimmomatic:latest
@@ -83,7 +83,7 @@ inputs:
     inputBinding:
       shellQuote: false
       position: 1
-  nthreads:
+  threads:
     doc: Number of threads
     type: int
     default: 10

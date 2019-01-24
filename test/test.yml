@@ -1,3 +1,5 @@
+sample_id: "test_sample"
+
 fastq1: 
   class: File
   path: "/ngs_share/scratch/pavlo/benchmark/misc/encode_chr22_test/data/chr22_10k_1.fastq.gz"
