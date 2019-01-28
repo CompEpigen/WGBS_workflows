@@ -1,9 +1,9 @@
 inp_read1: ["/ngs_share/scratch/pavlo/benchmark/encode_chr22_test/data/chr22_10k_1.fastq.gz"]
 inp_read2: ["/ngs_share/scratch/pavlo/benchmark/encode_chr22_test/data/chr22_10k_2.fastq.gz"]
-#reference_fasta:
+#reference:
 #  class: File
 #  path: /ngs_share/data/genomes/Hsapiens/GRCh37/bwameth/GRCh37.lambda.fa
-reference_fasta: /ngs_share/data/genomes/Hsapiens/GRCh37/bwameth/GRCh37.lambda.fa
+reference: /ngs_share/data/genomes/Hsapiens/GRCh37/bwameth/GRCh37.lambda.fa
 chromosomes: [ 'chr1', 'chr2', 'chr22', 'MT', 'Lambda' ]
 chr_prefix: "chr"
 lib_type: "non-directional"
@@ -20,17 +20,17 @@ trimmomatic_headcrop: 5
 trimmomatic_tailcrop: 5
 trimmomatic_minlen: 0
 trimmomatic_avgqual: 1
-pileometh_min_phred: 0
-pileometh_min_depth: 1
-pileometh_min_mapq: 0
-pileometh_ot: "0,0,0,0"
-pileometh_ob: "0,0,0,0"
-pileometh_ctot: "0,0,0,0"
-pileometh_ctob: "0,0,0,0"
-pileometh_not: "10,10,10,10"
-pileometh_nob: "10,10,10,10"
-pileometh_nctot: "10,10,10,10"
-pileometh_nctob: "10,10,10,10"
+methyldackel_min_phred: 0
+methyldackel_min_depth: 1
+methyldackel_min_mapq: 0
+methyldackel_ot: "0,0,0,0"
+methyldackel_ob: "0,0,0,0"
+methyldackel_ctot: "0,0,0,0"
+methyldackel_ctob: "0,0,0,0"
+methyldackel_not: "10,10,10,10"
+methyldackel_nob: "10,10,10,10"
+methyldackel_nctot: "10,10,10,10"
+methyldackel_nctob: "10,10,10,10"
 analysis_dir: "/ngs_share/pipeline_test/chr22_very_small"
 temp_dir: "/ngs_share/pipeline_test/chr22_very_small/files"
 clean_raw_fastqs: true

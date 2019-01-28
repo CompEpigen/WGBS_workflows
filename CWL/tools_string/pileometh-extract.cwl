@@ -109,7 +109,7 @@ arguments:
 - position: -1
   valueFrom: ;
 - position: 1
-  valueFrom: /ngs_share/tools/PileOMeth_dev/PileOMeth
+  valueFrom: /ngs_share/tools/methyldackel_dev/methyldackel
 - position: 2
   valueFrom: extract
 - position: 10000

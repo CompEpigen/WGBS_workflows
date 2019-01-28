@@ -12,7 +12,7 @@ hints:
 
 baseCommand: ["bwameth.py"]
 
-stdout: $(inputs.output_basename + ".sam")
+stdout: $(inputs.fastq1.nameroot + ".sam")
 
 inputs:
   reference:
@@ -40,8 +40,6 @@ inputs:
     type: File?
     inputBinding:
       position: 12
-  output_basename:
-    type: string
   threads:
     type: int?
     inputBinding:

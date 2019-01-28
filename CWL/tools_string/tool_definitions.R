@@ -127,9 +127,9 @@ cat(bwameth$toYAML(), file="/ngs_share/tools/BS-seq-pipelines/CWL/tools/bwameth.
 # Methylation caller
 ###############################################################################
 
-### PileOMeth
+### methyldackel
 
-#https://github.com/dpryan79/PileOMeth
+#https://github.com/dpryan79/methyldackel
 
 
 

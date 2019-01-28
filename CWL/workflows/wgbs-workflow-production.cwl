@@ -40,7 +40,7 @@ inputs:
   illuminaclip: string
 
   # alignment parameters
-  reference_fasta: 
+  reference: 
     type: File
     secondaryFiles:
       - .fai
@@ -57,17 +57,17 @@ inputs:
   lib_type: string
 
   # methylation calling
-  pileometh_min_phred: int
-  pileometh_min_depth: int
-  pileometh_min_mapq: int
-  pileometh_ot: string
-  pileometh_ob: string
-  pileometh_ctot: string
-  pileometh_ctob: string
-  pileometh_not: string
-  pileometh_nob: string
-  pileometh_nctot: string
-  pileometh_nctob: string
+  methyldackel_min_phred: int
+  methyldackel_min_depth: int
+  methyldackel_min_mapq: int
+  methyldackel_ot: string
+  methyldackel_ob: string
+  methyldackel_ctot: string
+  methyldackel_ctob: string
+  methyldackel_not: string
+  methyldackel_nob: string
+  methyldackel_nctot: string
+  methyldackel_nctob: string
 
 steps:
   adaptor_trimming:
@@ -110,7 +110,7 @@ steps:
     scatter: [] #!
     in:
       file_dir: temp_dir
-      reference: reference_fasta
+      reference: reference
       read1: adaptor_trimming/output_read1_trimmed_file
       read2: adaptor_trimming/output_read2_trimmed_paired_file
       filename: #! intern
@@ -181,6 +181,7 @@ steps:
       tmpdir: temp_dir
       createIndex:
         default: 'true'
+
   clean_fixed_bams:
     scatter: '#clean_fixed_bams/files'
     run: ../tools_string/cleanup.yml
@@ -191,6 +192,7 @@ steps:
       data_dir: temp_dir
       do_clean: clean_chr_bams
       previous_step: bam_merging/mergeSam_output
+
   index_bam_file:
     scatter: '#index_bam_file/input'
     run: ../tools_string/samtools-index.yml
@@ -202,6 +204,7 @@ steps:
       bai:
         default: true
       cleanup_check: clean_fixed_bams/output
+
   duplicates_removal:
     scatter: '#duplicates_removal/inputFileName_markDups'
     run: ../tools_string/picard-MarkDuplicates.yml
@@ -222,6 +225,7 @@ steps:
         valueFrom: $(inputs.inputFileName_markDups.substr(0, inputs.inputFileName_markDups.lastIndexOf('.')))_duplicate_metrics.txt
       createIndex:
         default: 'true'
+
   clean_merged_bams:
     run: ../tools_string/cleanup.yml
     out:
@@ -232,6 +236,7 @@ steps:
       do_clean: clean_merged_bams
       previous_step1: duplicates_removal/markDups_output
       previous_step2: index_bam_file/index
+
   flag_stat_dup_removed:
     scatter: '#flag_stat_dup_removed/input_bam_file'
     run: ../tools_string/samtools-flagstat.yml
@@ -240,6 +245,7 @@ steps:
     in:
       file_dir: temp_dir
       input_bam_file: duplicates_removal/markDups_output
+
   insert_size_dist:
     scatter: '#insert_size_dist/inputFileName_insertSize'
     run: ../tools_string/picard-InsertSizeMetric.yml
@@ -259,17 +265,19 @@ steps:
       tmpdir: temp_dir
       createIndex:
         default: 'true'
+
   mbias_calculation:
     scatter: '#mbias_calculation/bam_file'
-    run: ../tools_string/pileometh-mbias.yml
+    run: ../tools_string/methyldackel-mbias.yml
     out:
     - mbias_file
     in:
       bam_file: duplicates_removal/markDups_output
-      reference: reference_fasta
+      reference: reference
       mbiasfile_name:
         source: duplicates_removal/markDups_output
         valueFrom: $(inputs.bam_file.substr(inputs.bam_file.lastIndexOf('/')+1, inputs.bam_file.lastIndexOf('.')))_mbias
+
   mbias_calculation_trimmed:
     scatter: '#mbias_calculation_trimmed/bam_file'
     run: ../tools_string/methyldackel-mbias.yml
@@ -277,21 +285,22 @@ steps:
     - mbias_file
     in:
       bam_file: duplicates_removal/markDups_output
-      reference: reference_fasta
+      reference: reference
       mbiasfile_name:
         source: duplicates_removal/markDups_output
         valueFrom: $(inputs.bam_file.substr(inputs.bam_file.lastIndexOf('/')+1, inputs.bam_file.lastIndexOf('.')))_mbiasTrimmed
-      OT: pileometh_ot
-      OB: pileometh_ob
-      CTOT: pileometh_ctot
-      CTOB: pileometh_ctob
-      nOT: pileometh_not
-      nOB: pileometh_nob
-      nCTOT: pileometh_nctot
-      nCTOB: pileometh_nctob
-      min_phred: pileometh_min_phred
-      min_depth: pileometh_min_depth
-      min_mapq: pileometh_min_mapq
+      OT: methyldackel_ot
+      OB: methyldackel_ob
+      CTOT: methyldackel_ctot
+      CTOB: methyldackel_ctob
+      nOT: methyldackel_not
+      nOB: methyldackel_nob
+      nCTOT: methyldackel_nctot
+      nCTOB: methyldackel_nctob
+      min_phred: methyldackel_min_phred
+      min_depth: methyldackel_min_depth
+      min_mapq: methyldackel_min_mapq
+
   methylation_calling:
     scatter: '#methylation_calling/bam_file'
     run: "../tools_string/methyldackel-extract.yml"
@@ -303,20 +312,20 @@ steps:
       bedfile_name:
         source: duplicates_removal/markDups_output
         valueFrom: $(inputs.bam_file.substr(inputs.bam_file.lastIndexOf('/')+1, inputs.bam_file.lastIndexOf('.')))
-      reference: reference_fasta
+      reference: reference
       noCG:
         default: false
-      OT: pileometh_ot
-      OB: pileometh_ob
-      CTOT: pileometh_ctot
-      CTOB: pileometh_ctob
-      nOT: pileometh_not
-      nOB: pileometh_nob
-      nCTOT: pileometh_nctot
-      nCTOB: pileometh_nctob
-      min_phred: pileometh_min_phred
-      min_depth: pileometh_min_depth
-      min_mapq: pileometh_min_mapq
+      OT: methyldackel_ot
+      OB: methyldackel_ob
+      CTOT: methyldackel_ctot
+      CTOB: methyldackel_ctob
+      nOT: methyldackel_not
+      nOB: methyldackel_nob
+      nCTOT: methyldackel_nctot
+      nCTOB: methyldackel_nctob
+      min_phred: methyldackel_min_phred
+      min_depth: methyldackel_min_depth
+      min_mapq: methyldackel_min_mapq
   merge_meth_calls:
     run: ../tools_string/methcall-merger.yml
     out:
@@ -342,18 +351,18 @@ steps:
     - methcall_bed
     in:
       file_dir: temp_dir
-      reference: reference_fasta
+      reference: reference
       noCG:
         default: true
       bedfile_name: conversion_chr_name
-      OT: pileometh_ot
-      OB: pileometh_ob
-      CTOT: pileometh_ctot
-      CTOB: pileometh_ctob
-      nOT: pileometh_not
-      nOB: pileometh_nob
-      nCTOT: pileometh_nctot
-      nCTOB: pileometh_nctob
+      OT: methyldackel_ot
+      OB: methyldackel_ob
+      CTOT: methyldackel_ctot
+      CTOB: methyldackel_ctob
+      nOT: methyldackel_not
+      nOB: methyldackel_nob
+      nCTOT: methyldackel_nctot
+      nCTOB: methyldackel_nctob
       bam_file: find_lambda_file/lambda_bam
   clean_rmdup_bams:
     run: ../tools_string/cleanup.yml

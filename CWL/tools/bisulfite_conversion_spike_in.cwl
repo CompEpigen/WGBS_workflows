@@ -19,7 +19,7 @@ arguments:
 stdout: $(inputs.output_basename + ".bs_convers.txt")
 
 inputs:
-  spike_in_methylcall_bedgraph:
+  spike_in_mcall_bedgraph:
     type: File
     inputBinding:
       position: 10

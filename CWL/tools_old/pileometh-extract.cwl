@@ -99,7 +99,7 @@ inputs:
       prefix: --nCTOB
       separate: true
   noCG: boolean
-baseCommand: /ngs_share/tools/PileOMeth_dev/PileOMeth
+baseCommand: /ngs_share/tools/methyldackel_dev/methyldackel
 arguments:
 - position: 2
   valueFrom: extract

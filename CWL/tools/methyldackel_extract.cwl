@@ -5,7 +5,7 @@ requirements:
   ShellCommandRequirement: {}
 hints:
   ResourceRequirement:
-    coresMin: 1
+    coresMin: $( inputs.threads )
     ramMin: 28000
   DockerRequirement:
     dockerPull: nfcore/methylseq
@@ -15,7 +15,7 @@ inputs:
   output_basename:
     type: string
     inputBinding:
-      valueFrom: $(self + ".methylcall")
+      valueFrom: $(self + ".mcall")
       position: 10
       prefix: -o
   reference:
@@ -95,10 +95,21 @@ inputs:
     inputBinding:
       position: 1
       prefix: --nCTOB
-  noCG: boolean
+  noCG: 
+    type: boolean
+    inputBinding:
+      position: 1
+      prefix: --noCpG
+      
+  threads:
+    type: int
+    default: 1
+    inputBinding:
+      position: 1
+      prefix: "-@"
 
 outputs:
-  methylcall_bedgraph:
+  mcall_bedgraph:
     type: File
     outputBinding:
       glob: "*.bedGraph"

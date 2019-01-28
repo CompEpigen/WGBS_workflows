@@ -11,14 +11,14 @@ requirements:
 inputs:
   sample_id: string
   fastq1:
-    type: File
-    # type: array
-    # items: File
+    type:
+      type: array
+      items: File
   fastq2:
-    type: File
-    # type: array
-    # items: File
-  reference_fasta: 
+    type:
+      type: array
+      items: File
+  reference: 
     type: File
     secondaryFiles:
       - .fai
@@ -75,143 +75,149 @@ inputs:
     type: string
     default: "2:30:10:8:true"
 
-  pileometh_min_phred: 
+  methyldackel_min_phred: 
     type: int
     default: 0
-  pileometh_min_depth: 
+  methyldackel_min_depth: 
     type: int
     default: 1
-  pileometh_min_mapq: 
+  methyldackel_min_mapq: 
     type: int
     default: 0
-  pileometh_ot: 
+  methyldackel_ot: 
     type: string
     default: "0,0,0,0"
-  pileometh_ob: 
+  methyldackel_ob: 
     type: string
     default: "0,0,0,0"
-  pileometh_ctot: 
+  methyldackel_ctot: 
     type: string
     default: "0,0,0,0"
-  pileometh_ctob: 
+  methyldackel_ctob: 
     type: string
     default: "0,0,0,0"
-  pileometh_not: 
+  methyldackel_not: 
     type: string
     default: "10,10,10,10"
-  pileometh_nob: 
+  methyldackel_nob: 
     type: string
     default: "10,10,10,10"
-  pileometh_nctot: 
+  methyldackel_nctot: 
     type: string
     default: "10,10,10,10"
-  pileometh_nctob: 
+  methyldackel_nctob: 
     type: string
     default: "10,10,10,10"
-  pilometh_noCG:
+  methyldackel_noCG:
     type: boolean
     default: false
 
-
-# conversion_chr_name: string
-
 steps:
-  adaptor_trimming:
-    run: "../tools/trimmomatic.cwl"
-    # scatterMethod: dotproduct
-    # scatter: [fastq1, fastq2] 
-    # scatterMethod: 'dotproduct'
+  trim_map_duprem:
+    scatter: [fastq1, fastq2]
+    scatterMethod: 'dotproduct'
+    run: "../workflow_modules/trim_map_duprem.cwl"
     in:
       fastq1: fastq1
       fastq2: fastq2
-      adapters_file: trimmomatic_adapters_file
-      phred: trimmomatic_phred
-      illuminaclip: trimmomatic_illuminaclip
-      leading: trimmomatic_leading
-      trailing: trimmomatic_trailing
-      crop: trimmomatic_crop
-      # headcrop: trimmomatic_headcrop
-      # tailcrop: trimmomatic_tailcrop
-      minlen: trimmomatic_minlen
-      avgqual: trimmomatic_avgqual
-      threads: max_threads
-    out:
-    - fastq1_trimmed
-    - fastq2_trimmed
-    - fastq1_trimmed_unpaired
-    - fastq2_trimmed_unpaired
-    - trimmomatic_log
-
-  mapping:
-    run: "../tools/bwameth.cwl"
-    # scatterMethod: dotproduct
-    # scatter: [] #!
-    in:
-      fastq1: adaptor_trimming/fastq1_trimmed
-      fastq2: adaptor_trimming/fastq2_trimmed
-      reference: reference_fasta
-      output_basename: sample_id
-      threads: max_threads
+      trimmomatic_adapters_file: trimmomatic_adapters_file
+      trimmomatic_phred: trimmomatic_phred
+      trimmomatic_illuminaclip: trimmomatic_illuminaclip
+      trimmomatic_leading: trimmomatic_leading
+      trimmomatic_trailing: trimmomatic_trailing
+      trimmomatic_crop: trimmomatic_crop
+      # trimmomatic_headcrop: trimmomatic_headcrop
+      # trimmomatic_tailcrop: trimmomatic_tailcrop
+      trimmomatic_minlen: trimmomatic_minlen
+      trimmomatic_avgqual: trimmomatic_avgqual
+      max_threads: max_threads
+      reference: reference
       is_non_directional: is_non_directional
     out:
-    - sam
+      - trimmomatic_log
+      - picard_markdup_stdout
+      - bam
+      - pre_trim_fastqc_zip
+      - pre_trim_fastqc_html
+      - post_trim_fastqc_zip
+      - post_trim_fastqc_html
 
-  sam2bam:
-    doc: samtools view - convert sam to bam
-    run: "../tools/samtools_view_sam2bam.cwl"
+  lane_replicate_merging:
+    doc: samtools merge - merging bam files of lane replicates
+    run: "../tools/samtools_merge.cwl"
     in:
-      sam: mapping/sam
+      bams:
+        source: trim_map_duprem/bam
+      output_name:
+        source: sample_id
+        valueFrom: $(self + ".bam")
     out:
-      - bam_unsorted
+       - bam_merged
 
-  sort_bam: 
-    doc: samtools sort - sorts unsorted bam file by coordinates.
+  sorting_merged_bam:
+    doc: samtools sort - sorting of merged bam
     run: "../tools/samtools_sort.cwl"
     in:
-      bam_unsorted: sam2bam/bam_unsorted
+      bam_unsorted:
+        source: lane_replicate_merging/bam_merged
     out:
-      - bam_sorted
-
-  remove_duplicates:
-    doc: picard markdup - emoves duplicates from a single sorted bam file.
-    run: "../tools/picard_markdup.cwl"
-    in:
-      bam_sorted: sort_bam/bam_sorted
-    out:
-      - bam_duprem
-      - picard_markdup_stdout
+       - bam_sorted
 
   index_bam:
     doc: |
       samtools index - indexes sorted bam
     run: "../tools/samtools_index_hack.cwl"
     in:
-      bam_sorted: remove_duplicates/bam_duprem
+      bam_sorted: sorting_merged_bam/bam_sorted
     out:
        - bam_sorted_indexed
   
-  methylation_calling:
-    # scatter: '#methylation_calling/bam_file'
-    run: "../tools/methyldackel-extract.cwl"
+  qc_post_mapping:
+    doc: fastqc - quality control for reads after mapping and duplication removal
+    run: "../tools/fastqc.cwl"
+    in:
+      bam:
+        source: index_bam/bam_sorted_indexed
+    out:
+      - fastqc_zip
+      - fastqc_html
+  
+  mbias_calculation:
+    run: "../tools/methyldackel_mbias.cwl"
     in:
       bam: index_bam/bam_sorted_indexed
       output_basename: sample_id
-      reference: reference_fasta
-      noCG: pilometh_noCG
-      OT: pileometh_ot
-      OB: pileometh_ob
-      CTOT: pileometh_ctot
-      CTOB: pileometh_ctob
-      nOT: pileometh_not
-      nOB: pileometh_nob
-      nCTOT: pileometh_nctot
-      nCTOB: pileometh_nctob
-      min_phred: pileometh_min_phred
-      min_depth: pileometh_min_depth
-      min_mapq: pileometh_min_mapq
-      noCG: pilometh_noCG
+      reference: reference
+      nOT: methyldackel_not
+      nOB: methyldackel_nob
+      nCTOT: methyldackel_nctot
+      nCTOB: methyldackel_nctob
+      noCG: methyldackel_noCG
+      threads: max_threads
     out:
-    - methylcall_bedgraph
+    - mbias_output
+  
+  methylation_calling:
+    run: "../tools/methyldackel_extract.cwl"
+    in:
+      bam: index_bam/bam_sorted_indexed
+      output_basename: sample_id
+      reference: reference
+      OT: methyldackel_ot
+      OB: methyldackel_ob
+      CTOT: methyldackel_ctot
+      CTOB: methyldackel_ctob
+      nOT: methyldackel_not
+      nOB: methyldackel_nob
+      nCTOT: methyldackel_nctot
+      nCTOB: methyldackel_nctob
+      min_phred: methyldackel_min_phred
+      min_depth: methyldackel_min_depth
+      min_mapq: methyldackel_min_mapq
+      noCG: methyldackel_noCG
+      threads: max_threads
+    out:
+    - mcall_bedgraph
 
   get_spike_in_reads:
     doc: extracts reads mapping to the unmethylated spike in
@@ -232,58 +238,49 @@ steps:
        - bam_sorted_indexed
 
   methylation_calling_spike_in:
-    # scatter: '#methylation_calling/bam_file'
-    run: "../tools/methyldackel-extract.cwl"
+    run: "../tools/methyldackel_extract.cwl"
     in:
       bam: index_spike_in_bam/bam_sorted_indexed
       output_basename: 
         source: sample_id
         valueFrom: $(self + "_spike_in")
-      reference: reference_fasta
-      noCG: pilometh_noCG
-      OT: pileometh_ot
-      OB: pileometh_ob
-      CTOT: pileometh_ctot
-      CTOB: pileometh_ctob
-      nOT: pileometh_not
-      nOB: pileometh_nob
-      nCTOT: pileometh_nctot
-      nCTOB: pileometh_nctob
-      min_phred: pileometh_min_phred
-      min_depth: pileometh_min_depth
-      min_mapq: pileometh_min_mapq
-      noCG: pilometh_noCG
+      reference: reference
+      OT: methyldackel_ot
+      OB: methyldackel_ob
+      CTOT: methyldackel_ctot
+      CTOB: methyldackel_ctob
+      nOT: methyldackel_not
+      nOB: methyldackel_nob
+      nCTOT: methyldackel_nctot
+      nCTOB: methyldackel_nctob
+      min_phred: methyldackel_min_phred
+      min_depth: methyldackel_min_depth
+      min_mapq: methyldackel_min_mapq
+      noCG: methyldackel_noCG
+      threads: max_threads
     out:
-    - methylcall_bedgraph
+    - mcall_bedgraph
 
   conversion_estimation_spike_in:
     run: "../tools/bisulfite_conversion_spike_in.cwl"
     in:
-      spike_in_methylcall_bedgraph: methylation_calling_spike_in/methylcall_bedgraph
+      spike_in_mcall_bedgraph: methylation_calling_spike_in/mcall_bedgraph
       output_basename: sample_id
     out:
       - bisulfite_conversion_file
 
 outputs:
-  fastq1_trimmed:
-    type: File
-    outputSource: adaptor_trimming/fastq1_trimmed
-  fastq2_trimmed:
-    type: File
-    outputSource: adaptor_trimming/fastq2_trimmed
-  fastq1_trimmed_unpaired:
-    type: File
-    outputSource: adaptor_trimming/fastq1_trimmed_unpaired
-  fastq2_trimmed_unpaired:
-    type: File
-    outputSource: adaptor_trimming/fastq2_trimmed_unpaired
   trimmomatic_log:
-    type: File
-    outputSource: adaptor_trimming/trimmomatic_log
+    type:
+      type: array
+      items: File
+    outputSource: trim_map_duprem/trimmomatic_log
 
   picard_markdup_stdout:
-    type: File
-    outputSource: remove_duplicates/picard_markdup_stdout
+    type:
+      type: array
+      items: File
+    outputSource: trim_map_duprem/picard_markdup_stdout
 
   bam:
     type: File
@@ -292,14 +289,59 @@ outputs:
     type: File
     outputSource: index_spike_in_bam/bam_sorted_indexed
 
-  methylcall_bedgraph:
+  mbias_output:
+    type:
+      type: array
+      items: File
+    outputSource: mbias_calculation/mbias_output
+
+  mcall_bedgraph:
     type: File
-    outputSource: methylation_calling/methylcall_bedgraph
-  methylcall_bedgraph_spike_in:
+    outputSource: methylation_calling/mcall_bedgraph
+  mcall_bedgraph_spike_in:
     type: File
-    outputSource: methylation_calling_spike_in/methylcall_bedgraph
+    outputSource: methylation_calling_spike_in/mcall_bedgraph
 
   bisulfite_conversion_file:
     type: File
     outputSource: conversion_estimation_spike_in/bisulfite_conversion_file
 
+  
+  pre_trim_fastqc_zip:
+    type:
+      type: array
+      items: 
+        type: array
+        items: File
+    outputSource: trim_map_duprem/pre_trim_fastqc_zip
+  pre_trim_fastqc_html:
+    type:
+      type: array
+      items: 
+        type: array
+        items: File
+    outputSource: trim_map_duprem/pre_trim_fastqc_html
+  post_trim_fastqc_zip:
+    type:
+      type: array
+      items: 
+        type: array
+        items: File
+    outputSource: trim_map_duprem/post_trim_fastqc_zip
+  post_trim_fastqc_html:
+    type:
+      type: array
+      items: 
+        type: array
+        items: File
+    outputSource: trim_map_duprem/post_trim_fastqc_html
+  post_mapping_fastqc_zip:
+    type:
+      type: array
+      items: File
+    outputSource: qc_post_mapping/fastqc_zip
+  post_mapping_fastqc_html:
+    type:
+      type: array
+      items: File
+    outputSource: qc_post_mapping/fastqc_html

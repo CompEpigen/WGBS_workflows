@@ -43,7 +43,7 @@ inputs:
       position: 100000
       prefix: -D
       separate: true
-baseCommand: /ngs_share/tools/PileOMeth/PileOMeth
+baseCommand: /ngs_share/tools/methyldackel/methyldackel
 arguments:
 - position: 2
   valueFrom: mbias
