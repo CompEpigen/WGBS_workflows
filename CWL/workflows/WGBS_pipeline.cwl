@@ -269,6 +269,32 @@ steps:
     out:
       - bisulfite_conversion_file
 
+  create_summary_qc_report:
+    doc: |
+      multiqc summarizes the qc results from fastqc 
+      and other tools
+    run: "../tools/multiqc_hack.cwl"
+    in:
+      qc_files_array_of_array:
+        source:
+          - trim_map_duprem/pre_trim_fastqc_zip
+          - trim_map_duprem/pre_trim_fastqc_html
+          - trim_map_duprem/post_trim_fastqc_html
+          - trim_map_duprem/post_trim_fastqc_zip
+        linkMerge: merge_flattened
+      qc_files_array:
+        source:
+          - trim_map_duprem/picard_markdup_stdout
+          - trim_map_duprem/trimmomatic_log
+          - qc_post_mapping/fastqc_zip
+          - qc_post_mapping/fastqc_html
+        linkMerge: merge_flattened
+      report_name:
+        source: sample_id
+    out:
+      - multiqc_zip
+      - multiqc_html
+
 outputs:
   trimmomatic_log:
     type:
@@ -345,3 +371,10 @@ outputs:
       type: array
       items: File
     outputSource: qc_post_mapping/fastqc_html
+
+  multiqc_zip:
+    type: File
+    outputSource: create_summary_qc_report/multiqc_zip
+  multiqc_html:
+    type: File
+    outputSource: create_summary_qc_report/multiqc_html
