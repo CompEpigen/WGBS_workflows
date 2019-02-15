@@ -109,10 +109,10 @@ inputs:
     default: false
 
 steps:
-  trim_map_duprem:
+  trim_map:
     scatter: [fastq1, fastq2]
     scatterMethod: 'dotproduct'
-    run: "../workflow_modules/trim_map_duprem.cwl"
+    run: "../workflow_modules/trim_map.cwl"
     in:
       fastq1: fastq1
       fastq2: fastq2
@@ -131,7 +131,6 @@ steps:
       is_non_directional: is_non_directional
     out:
       - trimmomatic_log
-      - picard_markdup_stdout
       - bam
       - pre_trim_fastqc_zip
       - pre_trim_fastqc_html
@@ -159,12 +158,21 @@ steps:
     out:
        - bam_sorted
 
+  remove_duplicates:
+    doc: picard markdup - emoves duplicates from a single sorted bam file.
+    run: "../tools/picard_markdup.cwl"
+    in:
+      bam_sorted: sorting_merged_bam/bam_sorted
+    out:
+      - bam_duprem
+      - picard_markdup_stdout
+
   index_bam:
     doc: |
       samtools index - indexes sorted bam
     run: "../tools/samtools_index_hack.cwl"
     in:
-      bam_sorted: sorting_merged_bam/bam_sorted
+      bam_sorted: remove_duplicates/bam_duprem
     out:
        - bam_sorted_indexed
   
@@ -311,10 +319,8 @@ outputs:
     outputSource: trim_map_duprem/trimmomatic_log
 
   picard_markdup_stdout:
-    type:
-      type: array
-      items: File
-    outputSource: trim_map_duprem/picard_markdup_stdout
+    type: File
+    outputSource: remove_duplicates/picard_markdup_stdout
 
   bam:
     type: File

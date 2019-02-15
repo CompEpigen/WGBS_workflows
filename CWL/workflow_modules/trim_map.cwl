@@ -133,15 +133,6 @@ steps:
     out:
       - bam_sorted
 
-  remove_duplicates:
-    doc: picard markdup - emoves duplicates from a single sorted bam file.
-    run: "../tools/picard_markdup.cwl"
-    in:
-      bam_sorted: sort_bam/bam_sorted
-    out:
-      - bam_duprem
-      - picard_markdup_stdout
-
 outputs:
   fastq1_trimmed:
     type: File
@@ -159,12 +150,9 @@ outputs:
     type: File
     outputSource: adaptor_trimming/trimmomatic_log
 
-  picard_markdup_stdout:
-    type: File
-    outputSource: remove_duplicates/picard_markdup_stdout
   bam:
     type: File
-    outputSource: remove_duplicates/bam_duprem
+    outputSource: sort_bam/bam_sorted
 
   pre_trim_fastqc_zip:
     type:
