@@ -142,7 +142,7 @@ steps:
     run: "../tools/samtools_merge.cwl"
     in:
       bams:
-        source: trim_map_duprem/bam
+        source: trim_map/bam
       output_name:
         source: sample_id
         valueFrom: $(self + ".bam")
@@ -191,7 +191,7 @@ steps:
       samtools flagstat
     run: "../tools/samtools_flagstat.cwl"
     in:
-      bam_sorted: index_bam/bam_sorted_indexed
+      bam: index_bam/bam_sorted_indexed
     out:
        - flagstat_output
   
@@ -302,15 +302,15 @@ steps:
     in:
       qc_files_array_of_array:
         source:
-          - trim_map_duprem/pre_trim_fastqc_zip
-          - trim_map_duprem/pre_trim_fastqc_html
-          - trim_map_duprem/post_trim_fastqc_html
-          - trim_map_duprem/post_trim_fastqc_zip
+          - trim_map/pre_trim_fastqc_zip
+          - trim_map/pre_trim_fastqc_html
+          - trim_map/post_trim_fastqc_html
+          - trim_map/post_trim_fastqc_zip
         linkMerge: merge_flattened
       qc_files_array:
         source:
-          - trim_map_duprem/picard_markdup_stdout
-          - trim_map_duprem/trimmomatic_log
+          - remove_duplicates/picard_markdup_stdout
+          - trim_map/trimmomatic_log
           - qc_post_mapping/fastqc_zip
           - qc_post_mapping/fastqc_html
           - flagstats_post_mapping/flagstat_output
@@ -326,7 +326,7 @@ outputs:
     type:
       type: array
       items: File
-    outputSource: trim_map_duprem/trimmomatic_log
+    outputSource: trim_map/trimmomatic_log
 
   picard_markdup_stdout:
     type: File
@@ -368,28 +368,28 @@ outputs:
       items: 
         type: array
         items: File
-    outputSource: trim_map_duprem/pre_trim_fastqc_zip
+    outputSource: trim_map/pre_trim_fastqc_zip
   pre_trim_fastqc_html:
     type:
       type: array
       items: 
         type: array
         items: File
-    outputSource: trim_map_duprem/pre_trim_fastqc_html
+    outputSource: trim_map/pre_trim_fastqc_html
   post_trim_fastqc_zip:
     type:
       type: array
       items: 
         type: array
         items: File
-    outputSource: trim_map_duprem/post_trim_fastqc_zip
+    outputSource: trim_map/post_trim_fastqc_zip
   post_trim_fastqc_html:
     type:
       type: array
       items: 
         type: array
         items: File
-    outputSource: trim_map_duprem/post_trim_fastqc_html
+    outputSource: trim_map/post_trim_fastqc_html
   post_mapping_fastqc_zip:
     type:
       type: array
@@ -401,8 +401,7 @@ outputs:
       items: File
     outputSource: qc_post_mapping/fastqc_html
   post_mapping_flagstats:
-    type:
-      type: File
+    type: File
     outputSource: flagstats_post_mapping/flagstat_output
 
   multiqc_zip:
