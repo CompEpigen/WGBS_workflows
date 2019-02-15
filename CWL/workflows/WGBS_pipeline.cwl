@@ -186,7 +186,14 @@ steps:
       - fastqc_zip
       - fastqc_html
 
-      # flagstats
+  flagstats_post_mapping:
+    doc: |
+      samtools flagstat
+    run: "../tools/samtools_flagstat.cwl"
+    in:
+      bam_sorted: index_bam/bam_sorted_indexed
+    out:
+       - flagstat_output
   
   mbias_calculation_wo_trimming:
     run: "../tools/methyldackel_mbias.cwl"
@@ -306,6 +313,7 @@ steps:
           - trim_map_duprem/trimmomatic_log
           - qc_post_mapping/fastqc_zip
           - qc_post_mapping/fastqc_html
+          - flagstats_post_mapping/flagstat_output
         linkMerge: merge_flattened
       report_name:
         source: sample_id
@@ -392,6 +400,10 @@ outputs:
       type: array
       items: File
     outputSource: qc_post_mapping/fastqc_html
+  post_mapping_flagstats:
+    type:
+      type: File
+    outputSource: flagstats_post_mapping/flagstat_output
 
   multiqc_zip:
     type: File
