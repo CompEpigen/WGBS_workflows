@@ -42,27 +42,27 @@ inputs:
       position: 12
 
   nOT:
-    type: string
+    type: string?
     inputBinding:
       position: 1
       prefix: --nOT
   nOB:
-    type: string
+    type: string?
     inputBinding:
       position: 1
       prefix: --nOB
   nCTOT:
-    type: string
+    type: string?
     inputBinding:
       position: 1
       prefix: --nCTOT
   nCTOB:
-    type: string
+    type: string?
     inputBinding:
       position: 1
       prefix: --nCTOB
   noCG: 
-    type: boolean
+    type: boolean?
     inputBinding:
       position: 1
       prefix: --noCpG

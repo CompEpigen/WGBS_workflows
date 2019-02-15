@@ -188,11 +188,13 @@ steps:
 
       # flagstats
   
-  mbias_calculation:
+  mbias_calculation_wo_trimming:
     run: "../tools/methyldackel_mbias.cwl"
     in:
       bam: index_bam/bam_sorted_indexed
-      output_basename: sample_id
+      output_basename: 
+        source: sample_id
+        valueFrom: $(self + "_wo_trimming")
       reference: reference
       threads: max_threads
     out:
@@ -329,6 +331,11 @@ outputs:
     type: File
     outputSource: index_spike_in_bam/bam_sorted_indexed
 
+  mbias_output_wo_trimming:
+    type:
+      type: array
+      items: File
+    outputSource: mbias_calculation_wo_trimming/mbias_output
   mbias_output:
     type:
       type: array
