@@ -38,10 +38,6 @@ inputs:
   is_non_directional:
     type: boolean
     default: false
-  spike_in_chr_name:
-    doc: chromosome name in the reference genome which corresponds to the unmethylated spikein DNA
-    type: string
-    default: "Lamda"
   max_threads:
     type: int
     default: 10
@@ -59,12 +55,12 @@ inputs:
   trimmomatic_crop: 
     type: int
     default: 1000
-  trimmomatic_headcrop: 
-    type: int
-    default: 10
-  trimmomatic_tailcrop: 
-    type: int
-    default: 10
+  # trimmomatic_headcrop: 
+  #   type: int
+  #   default: 10
+  # trimmomatic_tailcrop: 
+  #   type: int
+  #   default: 10
   trimmomatic_minlen:
     type: int
     default: 0
@@ -181,7 +177,19 @@ steps:
     out:
       - fastqc_zip
       - fastqc_html
+
+      # flagstats
   
+  mbias_calculation:
+    run: "../tools/methyldackel_mbias.cwl"
+    in:
+      bam: index_bam/bam_sorted_indexed
+      output_basename: sample_id
+      reference: reference
+      threads: max_threads
+    out:
+    - mbias_output
+
   mbias_calculation:
     run: "../tools/methyldackel_mbias.cwl"
     in:
@@ -224,7 +232,7 @@ steps:
     run: "../tools/samtools_view_extract_spike_in.cwl"
     in:
       bam: index_bam/bam_sorted_indexed
-      region: spike_in_chr_name
+      region: spikein_chr_name
     out:
       - bam_spike_in
 
