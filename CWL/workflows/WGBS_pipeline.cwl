@@ -165,7 +165,7 @@ steps:
       bam_sorted: sorting_merged_bam/bam_sorted
     out:
       - bam_duprem
-      - picard_markdup_stdout
+      - picard_markdup_log
 
   index_bam:
     doc: |
@@ -309,7 +309,7 @@ steps:
         linkMerge: merge_flattened
       qc_files_array:
         source:
-          - remove_duplicates/picard_markdup_stdout
+          - remove_duplicates/picard_markdup_log
           - trim_map/trimmomatic_log
           - qc_post_mapping/fastqc_zip
           - qc_post_mapping/fastqc_html
@@ -328,9 +328,9 @@ outputs:
       items: File
     outputSource: trim_map/trimmomatic_log
 
-  picard_markdup_stdout:
+  picard_markdup_log:
     type: File
-    outputSource: remove_duplicates/picard_markdup_stdout
+    outputSource: remove_duplicates/picard_markdup_log
 
   bam:
     type: File
