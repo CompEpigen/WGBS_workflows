@@ -53,7 +53,6 @@ arguments:
 
 inputs:
   fastq1:
-    doc: FASTQ file for input read (read R1 in Paired End mode)
     type: File
     inputBinding:
       position: 5
@@ -63,14 +62,9 @@ inputs:
     inputBinding:
       position: 6
   adapters_file:
-    doc: FASTA file containing adapters, PCR sequences, etc. It is used to search
-      for and remove these sequences in the input FASTQ file(s)
     type: File
 
   path_to_trimmomatic:
-    doc: |
-      default path matching the applied docker container; 
-      if the container is not used please adapt
     type: string
     default: "/usr/share/java/trimmomatic.jar"
     inputBinding:
