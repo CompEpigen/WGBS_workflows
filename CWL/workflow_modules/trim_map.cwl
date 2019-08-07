@@ -60,7 +60,7 @@ inputs:
     default: "2:30:10:8:true"
 
 steps:
-  qc_pre_trim:
+  qc_raw:
     doc: fastqc - quality control for raw fastqs
     run: "../tools/fastqc.cwl"
     in:
@@ -96,7 +96,7 @@ steps:
     - fastq2_trimmed_unpaired
     - trimmomatic_log
 
-  qc_post_trim:
+  qc_trimmed:
     doc: fastqc - quality control for raw fastqs
     run: "../tools/fastqc.cwl"
     in:
@@ -154,23 +154,23 @@ outputs:
     type: File
     outputSource: sort_bam/bam_sorted
 
-  pre_trim_fastqc_zip:
+  raw_fastqc_zip:
     type:
       type: array
       items: File
-    outputSource: qc_pre_trim/fastqc_zip
-  pre_trim_fastqc_html:
+    outputSource: qc_raw/fastqc_zip
+  raw_fastqc_html:
     type:
       type: array
       items: File
-    outputSource: qc_pre_trim/fastqc_html
-  post_trim_fastqc_zip:
+    outputSource: qc_raw/fastqc_html
+  trimmed_fastqc_zip:
     type:
       type: array
       items: File
-    outputSource: qc_post_trim/fastqc_zip
-  post_trim_fastqc_html:
+    outputSource: qc_trimmed/fastqc_zip
+  trimmed_fastqc_html:
     type:
       type: array
       items: File
-    outputSource: qc_post_trim/fastqc_html
+    outputSource: qc_trimmed/fastqc_html

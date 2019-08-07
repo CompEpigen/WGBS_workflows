@@ -132,10 +132,10 @@ steps:
     out:
       - trimmomatic_log
       - bam
-      - pre_trim_fastqc_zip
-      - pre_trim_fastqc_html
-      - post_trim_fastqc_zip
-      - post_trim_fastqc_html
+      - raw_fastqc_zip
+      - raw_fastqc_html
+      - trimmed_fastqc_zip
+      - trimmed_fastqc_html
 
   lane_replicate_merging:
     doc: samtools merge - merging bam files of lane replicates
@@ -302,10 +302,10 @@ steps:
     in:
       qc_files_array_of_array:
         source:
-          - trim_map/pre_trim_fastqc_zip
-          - trim_map/pre_trim_fastqc_html
-          - trim_map/post_trim_fastqc_html
-          - trim_map/post_trim_fastqc_zip
+          - trim_map/raw_fastqc_zip
+          - trim_map/raw_fastqc_html
+          - trim_map/trimmed_fastqc_html
+          - trim_map/trimmed_fastqc_zip
         linkMerge: merge_flattened
       qc_files_array:
         source:
@@ -362,34 +362,34 @@ outputs:
     outputSource: conversion_estimation_spike_in/bisulfite_conversion_file
 
   
-  pre_trim_fastqc_zip:
+  raw_fastqc_zip:
     type:
       type: array
       items: 
         type: array
         items: File
-    outputSource: trim_map/pre_trim_fastqc_zip
-  pre_trim_fastqc_html:
+    outputSource: trim_map/raw_fastqc_zip
+  raw_fastqc_html:
     type:
       type: array
       items: 
         type: array
         items: File
-    outputSource: trim_map/pre_trim_fastqc_html
-  post_trim_fastqc_zip:
+    outputSource: trim_map/raw_fastqc_html
+  trimmed_fastqc_zip:
     type:
       type: array
       items: 
         type: array
         items: File
-    outputSource: trim_map/post_trim_fastqc_zip
-  post_trim_fastqc_html:
+    outputSource: trim_map/trimmed_fastqc_zip
+  trimmed_fastqc_html:
     type:
       type: array
       items: 
         type: array
         items: File
-    outputSource: trim_map/post_trim_fastqc_html
+    outputSource: trim_map/trimmed_fastqc_html
   post_mapping_fastqc_zip:
     type:
       type: array
