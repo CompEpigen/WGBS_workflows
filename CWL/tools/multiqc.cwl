@@ -41,6 +41,7 @@ hints:
   ResourceRequirement:
     coresMin: 1
     ramMin: 10000
+    tmpdirMin: 10000
   DockerRequirement:
     dockerPull: kerstenbreuer/multiqc:1.7
   

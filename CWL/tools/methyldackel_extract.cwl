@@ -3,10 +3,12 @@ class: CommandLineTool
 
 requirements:
   ShellCommandRequirement: {}
+  InlineJavascriptRequirement: {}
 hints:
   ResourceRequirement:
     coresMin: $( inputs.threads )
     ramMin: 28000
+    tmpdirMin: 30000
   DockerRequirement:
     dockerPull: nfcore/methylseq
 
@@ -56,42 +58,42 @@ inputs:
       position: 1
       prefix: --minDepth
   OT:
-    type: string
+    type: string?
     inputBinding:
       position: 1
       prefix: --OT
   OB:
-    type: string
+    type: string?
     inputBinding:
       position: 1
       prefix: --OB
   CTOT:
-    type: string
+    type: string?
     inputBinding:
       position: 1
       prefix: --CTOT
   CTOB:
-    type: string
+    type: string?
     inputBinding:
       position: 1
       prefix: --CTOB
   nOT:
-    type: string
+    type: string?
     inputBinding:
       position: 1
       prefix: --nOT
   nOB:
-    type: string
+    type: string?
     inputBinding:
       position: 1
       prefix: --nOB
   nCTOT:
-    type: string
+    type: string?
     inputBinding:
       position: 1
       prefix: --nCTOT
   nCTOB:
-    type: string
+    type: string?
     inputBinding:
       position: 1
       prefix: --nCTOB

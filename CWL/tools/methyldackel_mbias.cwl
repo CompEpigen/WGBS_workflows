@@ -3,10 +3,12 @@ class: CommandLineTool
 
 requirements:
   ShellCommandRequirement: {}
+  InlineJavascriptRequirement: {}
 hints:
   ResourceRequirement:
     coresMin: $( inputs.threads )
     ramMin: 28000
+    tmpdirMin: 30000
   DockerRequirement:
     dockerPull: nfcore/methylseq
 

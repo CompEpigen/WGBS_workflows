@@ -6,7 +6,7 @@ hints:
     ramMin: 5000
     tmpdirMin: 10000
   DockerRequirement:
-    dockerPull: kerstenbreuer/trim_galore:0.6.4_2.6_0.11.8
+    dockerPull: kerstenbreuer/trim_galore:0.6.4_2.6_0.11.8_scPBAT
   
 baseCommand: "fastqc"
 arguments: 
@@ -17,14 +17,10 @@ arguments:
     # reported file will be zipped
 
 inputs:
-  read1:
+  reads:
     type: File?
     inputBinding:
       position: 1
-  read2:
-    type: File?
-    inputBinding:
-      position: 2
   bam:
     type: File?
     inputBinding:

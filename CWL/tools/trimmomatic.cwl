@@ -7,6 +7,7 @@ hints:
   ResourceRequirement:
     coresMin: $( inputs.threads )
     ramMin: 28000
+    tmpdirMin: 10000
   DockerRequirement:
     dockerPull: dukegcb/trimmomatic:latest
 

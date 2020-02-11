@@ -7,6 +7,7 @@ hints:
   ResourceRequirement:
     coresMin: 1
     ramMin: 4000
+    tmpdirMin: 10000
   DockerRequirement:
     dockerPull: kerstenbreuer/samtools:1.7
 

@@ -3,16 +3,18 @@ class: CommandLineTool
 
 requirements:
   ShellCommandRequirement: {}
+  InlineJavascriptRequirement: {}
 hints:
   ResourceRequirement:
     coresMin: $( inputs.threads )
     ramMin: 28000
+    tmpdirMin: 30000
   DockerRequirement:
     dockerPull: kerstenbreuer/bwameth:latest
 
 baseCommand: ["bwameth.py"]
 
-stdout: $(inputs.fastq1.nameroot + ".sam")
+stdout: $(inputs.fastq1.nameroot).sam
 
 inputs:
   reference:
@@ -42,6 +44,7 @@ inputs:
       position: 12
   threads:
     type: int?
+    default: 1
     inputBinding:
       position: 1
       prefix: --threads
