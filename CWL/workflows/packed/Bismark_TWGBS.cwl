@@ -2,143 +2,192 @@
     "$graph": [
         {
             "class": "CommandLineTool",
-            "requirements": {
-                "InlineJavascriptRequirement": {},
-                "StepInputExpressionRequirement": {}
-            },
-            "hints": {
-                "ResourceRequirement": {
+            "requirements": [
+                {
+                    "class": "InlineJavascriptRequirement"
+                },
+                {
+                    "class": "StepInputExpressionRequirement"
+                }
+            ],
+            "hints": [
+                {
+                    "dockerPull": "kerstenbreuer/bismark:0.22.3",
+                    "class": "DockerRequirement"
+                },
+                {
                     "coresMin": "$(inputs.threads)",
                     "ramMin": "${return(Math.ceil(inputs.threads/5)*14000)}",
-                    "tmpdirMin": 30000
-                },
-                "DockerRequirement": {
-                    "dockerPull": "quay.io/biocontainers/bismark:0.22.3--0"
+                    "tmpdirMin": 30000,
+                    "class": "ResourceRequirement"
                 }
-            },
+            ],
             "baseCommand": "bismark",
             "arguments": [
                 {
                     "valueFrom": "--bam"
                 }
             ],
-            "inputs": {
-                "genome": {
+            "inputs": [
+                {
+                    "type": "boolean",
+                    "inputBinding": {
+                        "prefix": "--local",
+                        "position": 1
+                    },
+                    "id": "#bismark_align.cwl/bismark_local"
+                },
+                {
+                    "type": "boolean",
+                    "inputBinding": {
+                        "prefix": "--dovetail",
+                        "position": 1
+                    },
+                    "id": "#bismark_align.cwl/dovetail"
+                },
+                {
                     "type": "Directory",
                     "inputBinding": {
                         "prefix": "--genome",
                         "position": 10
-                    }
+                    },
+                    "id": "#bismark_align.cwl/genome"
                 },
-                "read1": {
+                {
+                    "type": "boolean",
+                    "inputBinding": {
+                        "prefix": "--non_directional",
+                        "position": 1
+                    },
+                    "id": "#bismark_align.cwl/non_directional"
+                },
+                {
+                    "type": "boolean",
+                    "inputBinding": {
+                        "prefix": "--pbat"
+                    },
+                    "id": "#bismark_align.cwl/pbat"
+                },
+                {
                     "type": "File",
                     "inputBinding": {
                         "prefix": "-1",
                         "position": 11
-                    }
+                    },
+                    "id": "#bismark_align.cwl/read1"
                 },
-                "read2": {
+                {
                     "type": "File",
                     "inputBinding": {
                         "prefix": "-2",
                         "position": 12
-                    }
+                    },
+                    "id": "#bismark_align.cwl/read2"
                 },
-                "pbat": {
-                    "type": "boolean",
-                    "inputBinding": {
-                        "prefix": "--pbat"
-                    }
-                },
-                "threads": {
+                {
                     "type": "int",
                     "default": 1,
                     "inputBinding": {
                         "prefix": "--multicore",
                         "valueFrom": "${return(Math.ceil(self/5))}",
                         "position": 1
-                    }
+                    },
+                    "id": "#bismark_align.cwl/threads"
                 }
-            },
-            "outputs": {
-                "aligned_reads": {
+            ],
+            "outputs": [
+                {
                     "type": "File",
                     "outputBinding": {
                         "glob": "*.bam"
-                    }
+                    },
+                    "id": "#bismark_align.cwl/aligned_reads"
                 },
-                "log": {
+                {
                     "type": "File",
                     "outputBinding": {
                         "glob": "*.txt"
-                    }
+                    },
+                    "id": "#bismark_align.cwl/log"
                 }
-            },
+            ],
             "id": "#bismark_align.cwl"
         },
         {
             "class": "CommandLineTool",
-            "hints": {
-                "ResourceRequirement": {
+            "hints": [
+                {
+                    "dockerPull": "kerstenbreuer/bismark:0.22.3",
+                    "class": "DockerRequirement"
+                },
+                {
                     "coresMin": 4,
                     "ramMin": 20000,
-                    "tmpdirMin": 30000
-                },
-                "DockerRequirement": {
-                    "dockerPull": "kerstenbreuer/bismark:0.22.2"
+                    "tmpdirMin": 30000,
+                    "class": "ResourceRequirement"
                 }
-            },
+            ],
             "baseCommand": "deduplicate_bismark",
             "arguments": [
                 {
                     "valueFrom": "${\n  if (inputs.paired_end){\n    return(\"-p\")\n  }\n  else {\n    return(\"-s\")\n  }\n}\n"
                 }
             ],
-            "inputs": {
-                "aligned_reads": {
+            "inputs": [
+                {
                     "type": "File",
                     "inputBinding": {
                         "prefix": "--bam",
                         "position": 10
-                    }
+                    },
+                    "id": "#bismark_deduplicate.cwl/aligned_reads"
                 },
-                "paired_end": {
+                {
                     "type": "boolean",
-                    "default": true
+                    "default": true,
+                    "id": "#bismark_deduplicate.cwl/paired_end"
                 }
-            },
-            "outputs": {
-                "dedup_reads": {
+            ],
+            "outputs": [
+                {
                     "type": "File",
                     "outputBinding": {
                         "glob": "*.deduplicated.bam"
-                    }
+                    },
+                    "id": "#bismark_deduplicate.cwl/dedup_reads"
                 },
-                "log": {
+                {
                     "type": "File",
                     "outputBinding": {
                         "glob": "*.deduplication_report.txt"
-                    }
+                    },
+                    "id": "#bismark_deduplicate.cwl/log"
                 }
-            },
+            ],
             "id": "#bismark_deduplicate.cwl"
         },
         {
             "class": "CommandLineTool",
-            "requirements": {
-                "InlineJavascriptRequirement": {},
-                "StepInputExpressionRequirement": {}
-            },
-            "hints": {
-                "ResourceRequirement": {
-                    "coresMin": "$(inputs.threads)",
-                    "ramMin": "${return(Math.ceil(inputs.threads/5)*14)}",
-                    "tmpdirMin": 30000
+            "requirements": [
+                {
+                    "class": "InlineJavascriptRequirement"
                 },
-                "DockerRequirement": {
-                    "dockerPull": "quay.io/biocontainers/bismark:0.22.3--0"
+                {
+                    "class": "StepInputExpressionRequirement"
                 }
-            },
+            ],
+            "hints": [
+                {
+                    "dockerPull": "kerstenbreuer/bismark:0.22.3",
+                    "class": "DockerRequirement"
+                },
+                {
+                    "coresMin": "$(inputs.threads)",
+                    "ramMin": "${return(inputs.threads*30000)}",
+                    "tmpdirMin": 30000,
+                    "class": "ResourceRequirement"
+                }
+            ],
             "baseCommand": "bismark_methylation_extractor",
             "arguments": [
                 {
@@ -166,175 +215,226 @@
                     "position": 1
                 }
             ],
-            "inputs": {
-                "aligned_reads": {
+            "inputs": [
+                {
                     "type": "File",
                     "inputBinding": {
                         "position": 10
-                    }
+                    },
+                    "id": "#bismark_methylation_extractor.cwl/aligned_reads"
                 },
-                "genome": {
+                {
                     "type": "Directory",
                     "inputBinding": {
                         "prefix": "--genome",
                         "position": 10
-                    }
+                    },
+                    "id": "#bismark_methylation_extractor.cwl/genome"
                 },
-                "no_overlap": {
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "inputBinding": {
+                        "prefix": "--ignore",
+                        "position": 3
+                    },
+                    "id": "#bismark_methylation_extractor.cwl/ignore"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "inputBinding": {
+                        "prefix": "--ignore_3prime",
+                        "position": 3
+                    },
+                    "id": "#bismark_methylation_extractor.cwl/ignore_3prime"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "inputBinding": {
+                        "prefix": "--ignore_3prime_r2",
+                        "position": 3
+                    },
+                    "id": "#bismark_methylation_extractor.cwl/ignore_3prime_r2"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "inputBinding": {
+                        "prefix": "--ignore_r2",
+                        "position": 3
+                    },
+                    "id": "#bismark_methylation_extractor.cwl/ignore_r2"
+                },
+                {
                     "type": "boolean",
                     "default": true,
                     "inputBinding": {
                         "prefix": "--no_overlap",
                         "position": 2
-                    }
+                    },
+                    "id": "#bismark_methylation_extractor.cwl/no_overlap"
                 },
-                "paired_end": {
+                {
                     "type": "boolean",
-                    "default": true
+                    "default": true,
+                    "id": "#bismark_methylation_extractor.cwl/paired_end"
                 },
-                "ignore": {
-                    "type": "int?",
-                    "inputBinding": {
-                        "prefix": "--ignore",
-                        "position": 3
-                    }
-                },
-                "ignore_r2": {
-                    "type": "int?",
-                    "inputBinding": {
-                        "prefix": "--ignore_r2",
-                        "position": 3
-                    }
-                },
-                "ignore_3prime": {
-                    "type": "int?",
-                    "inputBinding": {
-                        "prefix": "--ignore_3prime",
-                        "position": 3
-                    }
-                },
-                "ignore_3prime_r2": {
-                    "type": "int?",
-                    "inputBinding": {
-                        "prefix": "--ignore_3prime_r2",
-                        "position": 3
-                    }
-                },
-                "threads": {
+                {
                     "type": "int",
                     "default": 1,
                     "inputBinding": {
                         "prefix": "--multicore",
                         "valueFrom": "${return(Math.ceil(self/5))}",
                         "position": 1
-                    }
+                    },
+                    "id": "#bismark_methylation_extractor.cwl/threads"
                 }
-            },
-            "outputs": {
-                "methylation_calls_bedgraph": {
-                    "type": "File",
+            ],
+            "outputs": [
+                {
+                    "type": {
+                        "type": "array",
+                        "items": "File"
+                    },
                     "outputBinding": {
-                        "glob": "*bedGraph.gz"
-                    }
+                        "glob": "C*_O*.txt*"
+                    },
+                    "id": "#bismark_methylation_extractor.cwl/context_specific_methylation_reports"
                 },
-                "methylation_calls_bismark": {
-                    "type": "File",
-                    "outputBinding": {
-                        "glob": "*bismark.cov.gz"
-                    }
-                },
-                "mbias_report": {
-                    "type": "File",
-                    "outputBinding": {
-                        "glob": "*.M-bias.txt*"
-                    }
-                },
-                "splitting_report": {
-                    "type": "File",
-                    "outputBinding": {
-                        "glob": "*splitting_report.txt*"
-                    }
-                },
-                "genome_wide_methylation_report": {
+                {
                     "type": "File",
                     "outputBinding": {
                         "glob": "*CpG_report.txt*"
-                    }
+                    },
+                    "id": "#bismark_methylation_extractor.cwl/genome_wide_methylation_report"
                 },
-                "context_specific_methylation_reports": {
-                    "type": "File[]",
+                {
+                    "type": "File",
                     "outputBinding": {
-                        "glob": "C*_O*.txt*"
-                    }
+                        "glob": "*.M-bias.txt*"
+                    },
+                    "id": "#bismark_methylation_extractor.cwl/mbias_report"
+                },
+                {
+                    "type": "File",
+                    "outputBinding": {
+                        "glob": "*bedGraph.gz"
+                    },
+                    "id": "#bismark_methylation_extractor.cwl/methylation_calls_bedgraph"
+                },
+                {
+                    "type": "File",
+                    "outputBinding": {
+                        "glob": "*bismark.cov.gz"
+                    },
+                    "id": "#bismark_methylation_extractor.cwl/methylation_calls_bismark"
+                },
+                {
+                    "type": "File",
+                    "outputBinding": {
+                        "glob": "*splitting_report.txt*"
+                    },
+                    "id": "#bismark_methylation_extractor.cwl/splitting_report"
                 }
-            },
+            ],
             "id": "#bismark_methylation_extractor.cwl"
         },
         {
             "class": "CommandLineTool",
-            "hints": {
-                "ResourceRequirement": {
+            "hints": [
+                {
+                    "dockerPull": "kerstenbreuer/bismark:0.22.3",
+                    "class": "DockerRequirement"
+                },
+                {
                     "coresMin": 4,
                     "ramMin": 20000,
-                    "tmpdirMin": 10000
-                },
-                "DockerRequirement": {
-                    "dockerPull": "quay.io/biocontainers/bismark:0.22.3--0"
+                    "tmpdirMin": 10000,
+                    "class": "ResourceRequirement"
                 }
-            },
+            ],
             "baseCommand": "bismark2report",
-            "inputs": {
-                "alignment_report": {
-                    "type": "File?",
+            "inputs": [
+                {
+                    "type": [
+                        "null",
+                        "File"
+                    ],
                     "inputBinding": {
                         "prefix": "--alignment_report",
                         "position": 1
-                    }
+                    },
+                    "id": "#bismark_report.cwl/alignment_report"
                 },
-                "dedup_report": {
-                    "type": "File?",
+                {
+                    "type": [
+                        "null",
+                        "File"
+                    ],
                     "inputBinding": {
                         "prefix": "--dedup_report",
                         "position": 1
-                    }
+                    },
+                    "id": "#bismark_report.cwl/dedup_report"
                 },
-                "splitting_report": {
-                    "type": "File?",
-                    "inputBinding": {
-                        "prefix": "--splitting_report",
-                        "position": 1
-                    }
-                },
-                "mbias_report": {
-                    "type": "File?",
+                {
+                    "type": [
+                        "null",
+                        "File"
+                    ],
                     "inputBinding": {
                         "prefix": "--mbias_report",
                         "position": 1
-                    }
+                    },
+                    "id": "#bismark_report.cwl/mbias_report"
+                },
+                {
+                    "type": [
+                        "null",
+                        "File"
+                    ],
+                    "inputBinding": {
+                        "prefix": "--splitting_report",
+                        "position": 1
+                    },
+                    "id": "#bismark_report.cwl/splitting_report"
                 }
-            },
-            "outputs": {
-                "report": {
+            ],
+            "outputs": [
+                {
                     "type": "File",
                     "outputBinding": {
                         "glob": "*.html"
-                    }
+                    },
+                    "id": "#bismark_report.cwl/report"
                 }
-            },
+            ],
             "id": "#bismark_report.cwl"
         },
         {
             "class": "CommandLineTool",
-            "hints": {
-                "ResourceRequirement": {
+            "hints": [
+                {
+                    "dockerPull": "kerstenbreuer/trim_galore:0.6.4_2.6_0.11.8",
+                    "class": "DockerRequirement"
+                },
+                {
                     "coresMin": 1,
                     "ramMin": 5000,
-                    "tmpdirMin": 10000
-                },
-                "DockerRequirement": {
-                    "dockerPull": "kerstenbreuer/trim_galore:0.6.4_2.6_0.11.8"
+                    "tmpdirMin": 10000,
+                    "class": "ResourceRequirement"
                 }
-            },
+            ],
             "baseCommand": "fastqc",
             "arguments": [
                 {
@@ -345,38 +445,40 @@
                     "valueFrom": "--noextract"
                 }
             ],
-            "inputs": {
-                "read1": {
-                    "type": "File?",
+            "inputs": [
+                {
+                    "type": [
+                        "null",
+                        "File"
+                    ],
                     "inputBinding": {
                         "position": 1
-                    }
+                    },
+                    "id": "#fastqc.cwl/bam"
                 },
-                "read2": {
-                    "type": "File?",
+                {
+                    "type": [
+                        "null",
+                        "File"
+                    ],
+                    "inputBinding": {
+                        "position": 1
+                    },
+                    "id": "#fastqc.cwl/read1"
+                },
+                {
+                    "type": [
+                        "null",
+                        "File"
+                    ],
                     "inputBinding": {
                         "position": 2
-                    }
-                },
-                "bam": {
-                    "type": "File?",
-                    "inputBinding": {
-                        "position": 1
-                    }
-                }
-            },
-            "outputs": {
-                "fastqc_zip": {
-                    "doc": "all data e.g. figures",
-                    "type": {
-                        "type": "array",
-                        "items": "File"
                     },
-                    "outputBinding": {
-                        "glob": "*_fastqc.zip"
-                    }
-                },
-                "fastqc_html": {
+                    "id": "#fastqc.cwl/read2"
+                }
+            ],
+            "outputs": [
+                {
                     "doc": "html report showing results from zip",
                     "type": {
                         "type": "array",
@@ -384,62 +486,83 @@
                     },
                     "outputBinding": {
                         "glob": "*_fastqc.html"
-                    }
+                    },
+                    "id": "#fastqc.cwl/fastqc_html"
+                },
+                {
+                    "doc": "all data e.g. figures",
+                    "type": {
+                        "type": "array",
+                        "items": "File"
+                    },
+                    "outputBinding": {
+                        "glob": "*_fastqc.zip"
+                    },
+                    "id": "#fastqc.cwl/fastqc_zip"
                 }
-            },
+            ],
             "id": "#fastqc.cwl"
         },
         {
             "class": "CommandLineTool",
-            "hints": {
-                "ResourceRequirement": {
+            "hints": [
+                {
+                    "dockerPull": "kerstenbreuer/samtools:1.7",
+                    "class": "DockerRequirement"
+                },
+                {
                     "coresMin": 4,
                     "ramMin": 15000,
-                    "tmpdirMin": 10000
-                },
-                "DockerRequirement": {
-                    "dockerPull": "kerstenbreuer/samtools:1.7"
+                    "tmpdirMin": 10000,
+                    "class": "ResourceRequirement"
                 }
-            },
+            ],
             "baseCommand": [
                 "samtools",
                 "flagstat"
             ],
             "stdout": "$(inputs.bam.nameroot + inputs.output_suffix)",
-            "inputs": {
-                "bam": {
+            "inputs": [
+                {
                     "type": "File",
                     "inputBinding": {
                         "position": 2
-                    }
+                    },
+                    "id": "#samtools_flagstat.cwl/bam"
                 },
-                "output_suffix": {
+                {
                     "type": "string",
-                    "default": ".flagStat"
+                    "default": ".flagStat",
+                    "id": "#samtools_flagstat.cwl/output_suffix"
                 }
-            },
-            "outputs": {
-                "flagstat_output": {
-                    "type": "stdout"
+            ],
+            "outputs": [
+                {
+                    "type": "stdout",
+                    "id": "#samtools_flagstat.cwl/flagstat_output"
                 }
-            },
+            ],
             "id": "#samtools_flagstat.cwl"
         },
         {
             "class": "CommandLineTool",
-            "requirements": {
-                "ShellCommandRequirement": {}
-            },
-            "hints": {
-                "ResourceRequirement": {
+            "requirements": [
+                {
+                    "class": "ShellCommandRequirement"
+                }
+            ],
+            "hints": [
+                {
+                    "dockerPull": "kerstenbreuer/samtools:1.7",
+                    "class": "DockerRequirement"
+                },
+                {
                     "coresMin": "$(inputs.threads)",
                     "ramMin": 20000,
-                    "tmpdirMin": 30000
-                },
-                "DockerRequirement": {
-                    "dockerPull": "kerstenbreuer/samtools:1.7"
+                    "tmpdirMin": 30000,
+                    "class": "ResourceRequirement"
                 }
-            },
+            ],
             "baseCommand": [
                 "samtools",
                 "merge"
@@ -477,12 +600,8 @@
                     "position": 8
                 }
             ],
-            "inputs": {
-                "output_name": {
-                    "type": "string",
-                    "default": "merged_reads.bam"
-                },
-                "bams": {
+            "inputs": [
+                {
                     "doc": "bam files to be merged",
                     "type": {
                         "type": "array",
@@ -490,21 +609,29 @@
                     },
                     "inputBinding": {
                         "position": 2
-                    }
+                    },
+                    "id": "#samtools_merge_and_sort.cwl/bams"
                 },
-                "name_sort": {
+                {
                     "type": "boolean",
                     "default": false,
                     "inputBinding": {
                         "prefix": "-n",
                         "position": 7
-                    }
+                    },
+                    "id": "#samtools_merge_and_sort.cwl/name_sort"
                 },
-                "threads": {
+                {
+                    "type": "string",
+                    "default": "merged_reads.bam",
+                    "id": "#samtools_merge_and_sort.cwl/output_name"
+                },
+                {
                     "type": "int",
-                    "default": 1
+                    "default": 1,
+                    "id": "#samtools_merge_and_sort.cwl/threads"
                 }
-            },
+            ],
             "outputs": [
                 {
                     "id": "#samtools_merge_and_sort.cwl/bam_merged",
@@ -518,19 +645,23 @@
         },
         {
             "class": "CommandLineTool",
-            "requirements": {
-                "InlineJavascriptRequirement": {}
-            },
-            "hints": {
-                "ResourceRequirement": {
+            "requirements": [
+                {
+                    "class": "InlineJavascriptRequirement"
+                }
+            ],
+            "hints": [
+                {
+                    "dockerPull": "kerstenbreuer/trim_galore:0.6.4_2.6_0.11.8",
+                    "class": "DockerRequirement"
+                },
+                {
                     "coresMin": "$(Math.min(inputs.threads, 8))",
                     "ramMin": 7000,
-                    "tmpdirMin": 10000
-                },
-                "DockerRequirement": {
-                    "dockerPull": "kerstenbreuer/trim_galore:0.6.4_2.6_0.11.8"
+                    "tmpdirMin": 10000,
+                    "class": "ResourceRequirement"
                 }
-            },
+            ],
             "baseCommand": "trim_galore",
             "arguments": [
                 {
@@ -556,100 +687,135 @@
                     "position": 1
                 }
             ],
-            "inputs": {
-                "read1": {
-                    "type": "File",
-                    "inputBinding": {
-                        "position": 10
-                    }
-                },
-                "read2": {
-                    "type": "File",
-                    "inputBinding": {
-                        "position": 11
-                    }
-                },
-                "adapter1": {
+            "inputs": [
+                {
                     "doc": "Adapter sequence for first reads.\nif not specified, trim_galore will try to autodetect whether ...\n- Illumina universal adapter (AGATCGGAAGAGC)\n- Nextera adapter (CTGTCTCTTATA)\n- Illumina Small RNA 3' Adapter (TGGAATTCTCGG)\n... was used.\nYou can directly choose one of the above configurations\nby setting the string to \"illumina\", \"nextera\", or \"small_rna\".\n",
-                    "type": "string?"
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#trim_galore.cwl/adapter1"
                 },
-                "adapter2": {
+                {
                     "doc": "Adapter sequence for second reads.\nif not specified, trim_galore will try to autodetect whether ...\n- Illumina universal adapter (AGATCGGAAGAGC)\n- Nextera adapter (CTGTCTCTTATA)\n- Illumina Small RNA 3' Adapter (TGGAATTCTCGG)\n... was used.\nYou can directly choose one of the above configurations\nby setting the adapter1 string to \"illumina\", \"nextera\", or \"small_rna\".\n",
-                    "type": "string?"
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#trim_galore.cwl/adapter2"
                 },
-                "quality": {
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "inputBinding": {
+                        "position": 1,
+                        "prefix": "--clip_r1"
+                    },
+                    "id": "#trim_galore.cwl/clip_r1"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "inputBinding": {
+                        "position": 1,
+                        "prefix": "--clip_r2"
+                    },
+                    "id": "#trim_galore.cwl/clip_r2"
+                },
+                {
                     "type": "int",
                     "default": 20,
                     "inputBinding": {
                         "position": 1,
                         "prefix": "--quality"
-                    }
+                    },
+                    "id": "#trim_galore.cwl/quality"
                 },
-                "rrbs": {
+                {
+                    "type": "File",
+                    "inputBinding": {
+                        "position": 10
+                    },
+                    "id": "#trim_galore.cwl/read1"
+                },
+                {
+                    "type": "File",
+                    "inputBinding": {
+                        "position": 11
+                    },
+                    "id": "#trim_galore.cwl/read2"
+                },
+                {
                     "type": "boolean",
                     "inputBinding": {
                         "position": 1,
                         "prefix": "--rrbs"
-                    }
+                    },
+                    "id": "#trim_galore.cwl/rrbs"
                 },
-                "clip_r1": {
-                    "type": "int?",
-                    "inputBinding": {
-                        "position": 1,
-                        "prefix": "--clip_r1"
-                    }
-                },
-                "clip_r2": {
-                    "type": "int?",
-                    "inputBinding": {
-                        "position": 1,
-                        "prefix": "--clip_r2"
-                    }
-                },
-                "three_prime_clip_r1": {
-                    "type": "int?",
-                    "inputBinding": {
-                        "position": 1,
-                        "prefix": "--three_prime_clip_r1"
-                    }
-                },
-                "three_prime_clip_r2": {
-                    "type": "int?",
-                    "inputBinding": {
-                        "position": 1,
-                        "prefix": "--three_prime_clip_r2"
-                    }
-                },
-                "threads": {
+                {
                     "type": "int",
                     "default": 1,
                     "inputBinding": {
                         "valueFrom": "$(Math.min(self, 8))",
                         "prefix": "--cores",
                         "position": 1
-                    }
+                    },
+                    "id": "#trim_galore.cwl/threads"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "inputBinding": {
+                        "position": 1,
+                        "prefix": "--three_prime_clip_r1"
+                    },
+                    "id": "#trim_galore.cwl/three_prime_clip_r1"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "inputBinding": {
+                        "position": 1,
+                        "prefix": "--three_prime_clip_r2"
+                    },
+                    "id": "#trim_galore.cwl/three_prime_clip_r2"
                 }
-            },
-            "outputs": {
-                "read1_trimmed": {
+            ],
+            "outputs": [
+                {
+                    "type": {
+                        "type": "array",
+                        "items": "File"
+                    },
+                    "outputBinding": {
+                        "glob": "*trimming_report.txt"
+                    },
+                    "id": "#trim_galore.cwl/log"
+                },
+                {
                     "type": "File",
                     "outputBinding": {
                         "glob": "*val_1.fq.gz"
-                    }
+                    },
+                    "id": "#trim_galore.cwl/read1_trimmed"
                 },
-                "read2_trimmed": {
+                {
                     "type": "File",
                     "outputBinding": {
                         "glob": "*val_2.fq.gz"
-                    }
-                },
-                "log": {
-                    "type": "File[]",
-                    "outputBinding": {
-                        "glob": "*trimming_report.txt"
-                    }
+                    },
+                    "id": "#trim_galore.cwl/read2_trimmed"
                 }
-            },
+            ],
             "id": "#trim_galore.cwl"
         },
         {
@@ -708,6 +874,10 @@
                 },
                 {
                     "type": "boolean",
+                    "id": "#main/bismark_local"
+                },
+                {
+                    "type": "boolean",
                     "default": true,
                     "id": "#main/bismark_no_overlap"
                 },
@@ -717,8 +887,16 @@
                     "id": "#main/bismark_pbat"
                 },
                 {
+                    "type": "boolean",
+                    "id": "#main/dovetail"
+                },
+                {
                     "type": "Directory",
                     "id": "#main/genome"
+                },
+                {
+                    "type": "boolean",
+                    "id": "#main/non_directional"
                 },
                 {
                     "type": {
@@ -788,8 +966,20 @@
                     "run": "#bismark_align.cwl",
                     "in": [
                         {
+                            "source": "#main/bismark_local",
+                            "id": "#main/align/bismark_local"
+                        },
+                        {
+                            "source": "#main/dovetail",
+                            "id": "#main/align/dovetail"
+                        },
+                        {
                             "source": "#main/genome",
                             "id": "#main/align/genome"
+                        },
+                        {
+                            "source": "#main/non_directional",
+                            "id": "#main/align/non_directional"
                         },
                         {
                             "source": "#main/bismark_pbat",

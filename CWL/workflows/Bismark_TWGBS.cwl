@@ -58,6 +58,13 @@ inputs:
   bismark_no_overlap:
     type: boolean
     default: true
+  bismark_local:
+    type: boolean
+  non_directional:
+    type: boolean
+  dovetail:
+    type: boolean
+
 
 steps:
   qc_pretrim:
@@ -111,6 +118,9 @@ steps:
       read1: trim/read1_trimmed
       read2: trim/read2_trimmed
       pbat: bismark_pbat
+      bismark_local: bismark_local
+      non_directional: non_directional
+      dovetail: dovetail
       threads: threads
       genome: genome
     out:
