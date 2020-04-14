@@ -9,7 +9,7 @@ hints:
     coresMin: $(inputs.threads)
     ramMin: ${return(Math.ceil(inputs.threads/5)*14000)}
   DockerRequirement:
-    dockerPull: quay.io/biocontainers/bismark:0.22.3--0
+    dockerPull: kerstenbreuer/bismark:0.22.3
 
 baseCommand: bismark
 arguments:

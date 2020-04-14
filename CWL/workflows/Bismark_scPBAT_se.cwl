@@ -74,7 +74,7 @@ steps:
   align:
     scatter: [reads]
     scatterMethod: 'dotproduct'
-    run: "../tools/bismark_align_scPBAT.cwl"
+    run: "../tools/bismark_align_scPBAT_se.cwl"
     in:
       reads: trim/reads_trimmed
       threads: threads
