@@ -7,10 +7,10 @@ requirements:
 hints:
   ResourceRequirement:
     coresMin: $(inputs.threads)
-    ramMin: ${return(Math.ceil(inputs.threads/5)*14)}
+    ramMin: ${return(inputs.threads*30000)}
     tmpdirMin: 30000
   DockerRequirement:
-    dockerPull: quay.io/biocontainers/bismark:0.22.3--0
+    dockerPull: kerstenbreuer/bismark:0.22.3
 
 baseCommand: bismark_methylation_extractor
 arguments:

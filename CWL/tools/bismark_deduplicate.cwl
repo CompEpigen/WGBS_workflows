@@ -7,7 +7,7 @@ hints:
     ramMin: 20000
     tmpdirMin: 30000
   DockerRequirement:
-    dockerPull: kerstenbreuer/bismark:0.22.2
+    dockerPull: kerstenbreuer/bismark:0.22.3
 
 baseCommand: deduplicate_bismark
 arguments:

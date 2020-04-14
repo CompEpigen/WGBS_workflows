@@ -7,7 +7,7 @@ hints:
     ramMin: 20000
     tmpdirMin: 10000
   DockerRequirement:
-    dockerPull: quay.io/biocontainers/bismark:0.22.3--0
+    dockerPull: kerstenbreuer/bismark:0.22.3
 
 baseCommand: bismark2report
 
