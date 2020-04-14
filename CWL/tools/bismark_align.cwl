@@ -10,7 +10,7 @@ hints:
     ramMin: ${return(Math.ceil(inputs.threads/5)*14000)}
     tmpdirMin: 30000
   DockerRequirement:
-    dockerPull: quay.io/biocontainers/bismark:0.22.3--0
+    dockerPull: kerstenbreuer/bismark:0.22.3
 
 baseCommand: bismark
 arguments:
@@ -43,6 +43,21 @@ inputs:
     inputBinding:
       prefix: --multicore
       valueFrom: ${return(Math.ceil(self/5))}
+      position: 1
+  bismark_local:
+    type: boolean
+    inputBinding:
+      prefix: --local
+      position: 1
+  non_directional:
+    type: boolean
+    inputBinding:
+      prefix: --non_directional
+      position: 1
+  dovetail:
+    type: boolean
+    inputBinding:
+      prefix: --dovetail
       position: 1
 
 outputs:
