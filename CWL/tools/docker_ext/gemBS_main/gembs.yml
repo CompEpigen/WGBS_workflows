@@ -1,0 +1,16 @@
+## To preserve the directory structures required by gemBS, Don't edit this file. 
+## Please update the settings of your datasets in example.conf and example.csv.
+## config : http://statgen.cnag.cat/gemBS/UserGuide/_build/html/pipelineConfig.html
+
+conf:
+    class: File
+    path: example.conf
+csv:
+    class: File
+    path: example.csv    
+ref:
+    class: Directory
+    location: reference/
+fastq:
+    class: Directory
+    location: fastq/    
