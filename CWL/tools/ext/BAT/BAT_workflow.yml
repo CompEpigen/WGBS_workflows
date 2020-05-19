@@ -1,0 +1,14 @@
+reference:
+    class: File
+    path: genomes/hg19/hg19_chr19.fa
+query:
+    class: File
+    path: raw/S5.1_R1.fastq.gz    
+mate_pair:
+    class: File
+    path: raw/S5.1_R2.fastq.gz
+prefix_db: genomes/hg19/hg19_chr19 #.ctidx and .gaidx
+prefix_location: # the first level basedir of the prefix_db
+    class: Directory
+    location: genomes
+path_outfiles: S5.1 #the prefix of the outfiles
