@@ -7,6 +7,8 @@ hints:
     tmpdirMin: 30000
   DockerRequirement:
     dockerPull: kerstenbreuer/samtools:1.7
+requirements:
+  InlineJavascriptRequirement: {}    
 
 baseCommand: ["samtools", "view"]
 
