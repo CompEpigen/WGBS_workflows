@@ -6,7 +6,7 @@ baseCommand: [BAT_calling]
 requirements:
   InlineJavascriptRequirement: {}
   DockerRequirement:
-    dockerPull: yuyu/bat 
+    dockerPull: bat 
   InitialWorkDirRequirement:
     listing:
       - $(inputs.query)

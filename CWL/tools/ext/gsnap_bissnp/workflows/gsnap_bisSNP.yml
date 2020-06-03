@@ -1,0 +1,18 @@
+ref: hg19_chr19
+r1:
+    class: File
+    path: raw/S5.1_R1.fastq.gz
+r2:
+    class: File
+    path: raw/S5.1_R2.fastq.gz
+reference:
+    class: File
+    path: chr19.fa
+dbsnp:
+    class: File
+    path: dbsnp_135.hg19.sort.vcf 
+bed:
+    class: File
+    path: Interval_list-test.bed
+call_conf: 30
+emit_conf: 0    

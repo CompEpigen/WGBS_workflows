@@ -6,7 +6,7 @@ baseCommand: [BAT_mapping]
 requirements:
   InlineJavascriptRequirement: {}
   DockerRequirement:
-    dockerPull: christianbioinf/bat 
+    dockerPull: bat 
     dockerOutputDirectory: /opt
   InitialWorkDirRequirement:
     listing:
